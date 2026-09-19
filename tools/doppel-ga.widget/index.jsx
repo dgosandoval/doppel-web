@@ -2,7 +2,7 @@
 // Drop (or symlink) this folder into ~/Library/Application Support/Übersicht/widgets/
 // Setup steps + config.json schema: see fetch_stats.py header.
 
-export const command = "python3 fetch_stats.py";
+export const command = "cd \"$HOME/Library/Application Support/Übersicht/widgets/doppel-ga.widget\" && /usr/bin/python3 fetch_stats.py 2>&1";
 
 export const refreshFrequency = 30000; // 30s
 
@@ -85,12 +85,12 @@ export const className = `
 const fmt = (n) => (n == null ? "—" : n.toLocaleString("es-CL"));
 
 export const render = ({ output, error }) => {
-  if (error) return <div className="err">Übersicht error</div>;
+  if (error) return <div className="err">err: {String(error).slice(0, 200)}</div>;
   let data;
   try {
     data = JSON.parse(output);
   } catch (_) {
-    return <div className="err">{output ? String(output).slice(0, 200) : "sin datos…"}</div>;
+    return <div className="err">raw: {output ? String(output).slice(0, 300) : "(sin output)"}</div>;
   }
   if (data.error) return <div className="err">{data.error}</div>;
 
