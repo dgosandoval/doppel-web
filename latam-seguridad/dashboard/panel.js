@@ -184,11 +184,12 @@
     $('#kpis').innerHTML = tiles.map(function (k) {
       return '<div class="kpi">' +
         '<div class="rotulo">' + k.rotulo + '</div>' +
-        '<div class="cifra">' + k.cifra + (k.unidad ? ' <small>' + k.unidad + '</small>' : '') + '</div>' +
+        '<div class="cifra' + (k.cifra === '—' ? ' sin-dato' : '') + '">' + k.cifra +
+          (k.unidad ? ' <small>' + k.unidad + '</small>' : '') + '</div>' +
         (k.sufijo ? '<div class="sub">' + k.sufijo + '</div>' : '') +
         '<div class="desglose">' +
-          '<span><i class="punto-totem"></i>Tótem ' + k.desglose[0] + '</span>' +
-          '<span><i class="punto-online"></i>Online ' + k.desglose[1] + '</span>' +
+          '<span><i class="punto-totem"></i>Tótem <b>' + k.desglose[0] + '</b></span>' +
+          '<span><i class="punto-online"></i>Online <b>' + k.desglose[1] + '</b></span>' +
         '</div></div>';
     }).join('');
   }

@@ -112,6 +112,9 @@ h1,h2,h3{font-family:"Latam Sans",system-ui,sans-serif; font-weight:700; letter-
 .kpi .rotulo{font-size:.78rem; color:var(--tinta-3); text-transform:uppercase; letter-spacing:.05em}
 .kpi .cifra{font-family:"Latam Sans",system-ui,sans-serif; font-weight:700; font-size:2.3rem; line-height:1.1; margin-top:6px}
 .kpi .cifra small{font-size:1rem; color:var(--tinta-3); font-weight:400}
+/* Sin participaciones todavía: la cifra ausente no debe pesar como un dato. */
+.kpi .cifra.sin-dato{font-size:1.6rem; color:#C9C9D8}
+.kpi .desglose b{font-weight:600}
 .kpi .desglose{display:flex; gap:14px; margin-top:10px; font-size:.8rem; color:var(--tinta-2)}
 .kpi .desglose span{display:flex; align-items:center; gap:6px}
 
