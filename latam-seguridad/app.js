@@ -1,5 +1,7 @@
 /* ───────── Trivia ¿Cuánto sabes? · LATAM Alcohol y Drogas ─────────
-   Demo estático: no hay backend, nada se registra.                  */
+   Cada partida se registra en la API (/latam-seguridad/api) para alimentar
+   el dashboard. Se guarda canal, punto, nombre si lo escriben, y la respuesta
+   a cada pregunta. Si la API falla, el juego sigue igual.                */
 
 (function () {
   'use strict';
@@ -7,6 +9,8 @@
   var POR_PARTIDA = 10;      // preguntas que se juegan
   var SEGUNDOS = 30;         // tiempo por pregunta
   var LETRAS = ['a', 'b', 'c', 'd'];
+  var API = 'api/';
+  var REINICIO_TOTEM = 60;   // segundos antes de volver a la portada en el tótem
 
   var $ = function (id) { return document.getElementById(id); };
 
@@ -25,8 +29,61 @@
     respondida: false,
     historial: [],
     t0: 0,
-    raf: 0
+    raf: 0,
+    partida: '',
+    tReinicio: 0
   };
+
+  /* ── canal: tótem u online ───────────────────────────────────────────
+     El tótem se marca una sola vez abriendo la URL con ?canal=totem&punto=SCL-T2;
+     queda guardado en ese dispositivo. Todo lo demás cuenta como online.      */
+
+  var canal = (function () {
+    var p = new URLSearchParams(location.search);
+    var c = p.get('canal');
+    try {
+      if (c === 'totem' || c === 'online') {
+        localStorage.setItem('latam_canal', c);
+        localStorage.setItem('latam_punto', p.get('punto') || '');
+      }
+      return {
+        canal: localStorage.getItem('latam_canal') || 'online',
+        punto: localStorage.getItem('latam_punto') || ''
+      };
+    } catch (e) {
+      return { canal: c === 'totem' ? 'totem' : 'online', punto: p.get('punto') || '' };
+    }
+  })();
+  var esTotem = canal.canal === 'totem';
+  if (esTotem) {
+    document.body.classList.add('totem');
+    var badge = document.getElementById('punto-badge');
+    badge.textContent = 'Modo tótem' + (canal.punto ? ' · ' + canal.punto : '');
+    badge.hidden = false;
+  }
+
+  /* ── registro (best-effort: nunca interrumpe el juego) ── */
+
+  function registrar(ruta, datos) {
+    try {
+      var cuerpo = JSON.stringify(datos);
+      if (ruta === 'respuesta' && navigator.sendBeacon) {
+        navigator.sendBeacon(API + ruta, new Blob([cuerpo], { type: 'application/json' }));
+        return;
+      }
+      fetch(API + ruta, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: cuerpo,
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) { /* sin registro, el juego sigue */ }
+  }
+
+  function nuevoId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'p-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+  }
 
   /* ── utilidades ── */
 
@@ -64,11 +121,21 @@
   $('siguiente').addEventListener('click', avanzar);
 
   function comenzar() {
+    clearTimeout(estado.tReinicio);
     estado.ronda = mezclar(window.PREGUNTAS).slice(0, porPartida);
     estado.i = 0;
     estado.aciertos = 0;
     estado.puntos = 0;
     estado.historial = [];
+    estado.partida = nuevoId();
+
+    registrar('partida', {
+      id: estado.partida,
+      canal: canal.canal,
+      punto: canal.punto,
+      nombre: estado.nombre
+    });
+
     mostrar('juego');
     pintarPregunta();
   }
@@ -164,6 +231,14 @@
 
     estado.historial.push({ q: q, bien: bien, sinResponder: idx === -1 });
 
+    registrar('respuesta', {
+      partida: estado.partida,
+      pregunta: q.id,
+      elegida: idx,
+      correcta: bien,
+      segundos: Math.round((SEGUNDOS - segundosRestantes()) * 10) / 10
+    });
+
     var enc = idx === -1
       ? 'Se acabó el tiempo. Respuesta correcta: '
       : (bien ? '¡Correcto! ' : 'Respuesta correcta: ');
@@ -191,6 +266,23 @@
     mostrar('fin');
     $('fin-aciertos').textContent = n;
     $('fin-total').textContent = '/' + t;
+
+    registrar('fin', {
+      partida: estado.partida,
+      aciertos: n,
+      total: t,
+      puntos: estado.puntos
+    });
+
+    // En el tótem la pantalla vuelve sola a la portada para el siguiente participante.
+    if (esTotem) {
+      clearTimeout(estado.tReinicio);
+      estado.tReinicio = setTimeout(function () {
+        estado.nombre = '';
+        $('nombre').value = '';
+        mostrar('inicio');
+      }, REINICIO_TOTEM * 1000);
+    }
 
     var titulo, mensaje;
     if (pct === 1) {

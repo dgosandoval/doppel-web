@@ -3,3 +3,4 @@ pod_factory/
 .git/
 .gitignore
 README*
+latam-trivia-api/

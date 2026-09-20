@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel · Activación Semana de la Seguridad · LATAM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../assets/latam.png">
+<link rel="stylesheet" href="panel.css">
+</head>
+<body data-palette="#5B3FE0,#E6004F">
+
+<!-- ───────── Clave ───────── -->
+<div class="gate" id="gate" hidden>
+  <form class="gate-caja" id="gate-form">
+    <img src="../assets/latam.png" alt="LATAM" width="110">
+    <h1>Panel de la activación</h1>
+    <p>Alcohol y Drogas · Semana de la Seguridad</p>
+    <input type="password" id="clave" placeholder="Clave de acceso" autocomplete="current-password">
+    <button type="submit">Entrar</button>
+    <span class="gate-error" id="gate-error" hidden>Clave incorrecta</span>
+  </form>
+</div>
+
+<!-- ───────── Panel ───────── -->
+<div id="panel" hidden>
+
+  <header class="tope">
+    <div class="tope-marca">
+      <img src="../assets/latam.png" alt="LATAM" width="96">
+      <div>
+        <h1>Activación Semana de la Seguridad</h1>
+        <p>Trivia Alcohol y Drogas · participación en vivo</p>
+      </div>
+    </div>
+    <div class="tope-acciones">
+      <label class="switch">
+        <input type="checkbox" id="demo-toggle">
+        <span>Datos de ejemplo</span>
+      </label>
+      <button id="actualizar" class="btn">Actualizar</button>
+      <span class="sello" id="sello"></span>
+    </div>
+  </header>
+
+  <div class="aviso-demo" id="aviso-demo" hidden>
+    Estás viendo <strong>datos simulados</strong> para mostrar cómo se ve el panel con la
+    activación en marcha. Ninguna de estas cifras corresponde a participaciones reales.
+  </div>
+
+  <main class="lienzo">
+
+    <section class="kpis" id="kpis"></section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-tope">
+        <div>
+          <h2>Desempeño por pregunta</h2>
+          <p class="sub">Porcentaje de respuestas correctas. El tótem y la trivia online se miden por separado.</p>
+        </div>
+        <div class="controles">
+          <label for="orden" class="sr">Ordenar</label>
+          <select id="orden">
+            <option value="falladas">Más falladas primero</option>
+            <option value="banco">Orden del banco</option>
+            <option value="volumen">Más respondidas primero</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="leyenda">
+        <span><i class="punto-totem"></i> Tótem</span>
+        <span><i class="punto-online"></i> Online</span>
+      </div>
+
+      <div class="tabla-envoltura">
+        <table class="tabla" id="tabla-preguntas">
+          <thead>
+            <tr>
+              <th scope="col" class="col-q">Pregunta</th>
+              <th scope="col" class="col-canal">Tótem</th>
+              <th scope="col" class="col-canal">Online</th>
+              <th scope="col" class="col-alt">Alternativas elegidas <span style="text-transform:none;letter-spacing:0">(ambos canales)</span></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="doble">
+      <section class="tarjeta">
+        <h2>Participación por día</h2>
+        <p class="sub">Partidas iniciadas, apiladas por canal.</p>
+        <div id="actividad" class="actividad"></div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Últimas participaciones</h2>
+        <p class="sub">Las 25 más recientes.</p>
+        <ul class="ultimas" id="ultimas"></ul>
+      </section>
+    </div>
+
+    <p class="pie">
+      Panel desarrollado por <strong>Doppel</strong> para la Activación Semana de la Seguridad ·
+      LATAM. El tótem se configura abriendo la trivia con
+      <code>?canal=totem&amp;punto=SCL-T2</code>; ese dispositivo queda marcado como tótem.
+    </p>
+  </main>
+</div>
+
+<script src="../preguntas.js"></script>
+<script src="panel.js"></script>
+</body>
+</html>
