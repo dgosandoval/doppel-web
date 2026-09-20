@@ -2,3 +2,5 @@
 .DS_Store
 node_modules/
 .claude/
+# El Worker de la trivia vive fuera del repo del sitio (Pages publica TODO lo versionado).
+latam-trivia-api/
