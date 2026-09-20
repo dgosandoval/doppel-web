@@ -1,0 +1,239 @@
+/* ───────── LATAM · Alcohol y Drogas · Trivia ───────── */
+
+@font-face{
+  font-family:"Latam Sans";
+  src:url("fonts/Latam_Sans_Light_Italic.otf") format("opentype");
+  font-weight:300; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:"Latam Sans";
+  src:url("fonts/Latam_Sans_Regular_Italic.otf") format("opentype");
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:"Latam Sans";
+  src:url("fonts/Latam_Sans_Bold_Italic.otf") format("opentype");
+  font-weight:700; font-style:normal; font-display:swap;
+}
+
+:root{
+  --azul:#180086;
+  --azul-hondo:#12006a;
+  --rojo:#E6004F;
+  --morado:#950065;
+  --pill:#953E81;
+  --blanco:#ffffff;
+  --tenue:rgba(255,255,255,.62);
+  --linea:rgba(255,255,255,.28);
+  --ok:#3ED598;
+  --no:#FF5C7A;
+  --ancho:520px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"Latam Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-weight:300;
+  color:var(--blanco);
+  background:var(--azul);
+  min-height:100dvh;
+  display:flex; flex-direction:column; align-items:center;
+  overflow-x:hidden;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:-1;
+  background:
+    radial-gradient(90% 55% at 50% 0%, #2a0aa8 0%, rgba(24,0,134,0) 60%),
+    radial-gradient(120% 70% at 50% 110%, rgba(149,0,101,.55) 0%, rgba(24,0,134,0) 65%),
+    var(--azul);
+}
+
+/* ───────── Estructura ───────── */
+.fone{
+  width:100%; max-width:var(--ancho);
+  flex:1 0 auto;
+  display:flex; flex-direction:column;
+}
+.pantalla{
+  display:none;
+  flex:1 0 auto;
+  flex-direction:column;
+  min-height:100dvh;
+  padding-bottom:18px;
+}
+.pantalla.activa{display:flex; animation:entra .35s ease both}
+@keyframes entra{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.hero{width:100%; display:block}
+.header{width:100%; display:block}
+.latam{width:120px; margin:26px auto 4px; display:block; opacity:.95}
+
+.cuerpo{
+  flex:1 0 auto;
+  padding:22px 22px 8px;
+  display:flex; flex-direction:column; gap:18px;
+}
+.cuerpo.centro{align-items:center; text-align:center}
+
+/* ───────── Tipografía ───────── */
+.bajada{font-size:1.06rem; line-height:1.5; color:var(--tenue)}
+.mini{font-size:.82rem; line-height:1.45; color:rgba(255,255,255,.45)}
+.pregunta{
+  font-weight:700; font-size:1.42rem; line-height:1.25;
+  letter-spacing:-.01em;
+  margin-top:2px;
+}
+.titulo-fin{font-weight:700; font-size:1.7rem; line-height:1.2}
+
+/* ───────── Portada ───────── */
+.campo{display:flex; flex-direction:column; gap:8px; font-size:.88rem; color:var(--tenue)}
+.campo em{font-style:normal; opacity:.6}
+.campo input{
+  font:inherit; font-size:1rem; color:var(--blanco);
+  background:rgba(255,255,255,.07);
+  border:1.5px solid var(--linea);
+  border-radius:999px;
+  padding:14px 20px;
+  transition:border-color .2s, background .2s;
+}
+.campo input::placeholder{color:rgba(255,255,255,.35)}
+.campo input:focus{outline:none; border-color:var(--rojo); background:rgba(255,255,255,.12)}
+#form-inicio{display:flex; flex-direction:column; gap:18px}
+
+/* ───────── Botón ───────── */
+.boton{
+  font:inherit; font-weight:700; font-size:1.05rem;
+  color:var(--blanco);
+  background:linear-gradient(100deg,var(--morado) 0%,var(--rojo) 100%);
+  border:0; border-radius:999px;
+  padding:16px 28px;
+  cursor:pointer;
+  box-shadow:0 10px 26px rgba(230,0,79,.3);
+  transition:transform .15s, box-shadow .15s, filter .15s;
+}
+.boton:hover{transform:translateY(-2px); box-shadow:0 14px 32px rgba(230,0,79,.4)}
+.boton:active{transform:translateY(0)}
+.boton:focus-visible{outline:3px solid var(--blanco); outline-offset:3px}
+
+/* ───────── Barra superior ───────── */
+.barra-sup{
+  display:flex; align-items:center; gap:12px;
+  padding:16px 22px 0;
+  font-size:.82rem; color:var(--tenue);
+}
+.progreso{
+  flex:1; height:5px; border-radius:99px;
+  background:rgba(255,255,255,.16); overflow:hidden;
+}
+.progreso i{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg,var(--morado),var(--rojo));
+  border-radius:99px; transition:width .4s cubic-bezier(.4,0,.2,1);
+}
+.puntaje{font-weight:700; color:var(--blanco); min-width:52px; text-align:right}
+.contador{min-width:46px}
+
+.cronometro{
+  height:3px; margin:12px 22px 0;
+  background:rgba(255,255,255,.12); border-radius:99px; overflow:hidden;
+}
+.cronometro i{
+  display:block; height:100%; width:100%;
+  background:linear-gradient(90deg,var(--rojo),#ff9a3c);
+  border-radius:99px;
+}
+.cronometro.apurado i{background:#ff9a3c}
+.cronometro.oculto{opacity:0}
+
+/* ───────── Opciones ───────── */
+.opciones{list-style:none; display:flex; flex-direction:column; gap:10px}
+.opcion{
+  width:100%; text-align:left;
+  font:inherit; font-size:1rem; line-height:1.35; color:var(--blanco);
+  background:rgba(255,255,255,.06);
+  border:1.5px solid var(--linea);
+  border-radius:18px;
+  padding:15px 18px 15px 15px;
+  display:flex; gap:12px; align-items:flex-start;
+  cursor:pointer;
+  transition:background .18s, border-color .18s, transform .12s;
+}
+.opcion:hover:not(:disabled){background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.5)}
+.opcion:active:not(:disabled){transform:scale(.99)}
+.opcion:focus-visible{outline:3px solid var(--blanco); outline-offset:2px}
+.opcion .letra{font-weight:700; opacity:.85; flex:0 0 auto}
+.opcion .marca{margin-left:auto; flex:0 0 auto; font-weight:700; opacity:0; transition:opacity .2s}
+
+.opcion:disabled{cursor:default; opacity:.55}
+.opcion.buena, .opcion.buena:disabled{
+  opacity:1;
+  background:linear-gradient(100deg,rgba(149,62,129,.95) 0%,rgba(230,0,79,.85) 100%);
+  border-color:transparent;
+  box-shadow:0 8px 22px rgba(230,0,79,.28);
+}
+.opcion.buena .marca{opacity:1; color:#fff}
+.opcion.mala, .opcion.mala:disabled{
+  opacity:1;
+  background:rgba(255,255,255,.04);
+  border-color:var(--no);
+  color:rgba(255,255,255,.8);
+}
+.opcion.mala .marca{opacity:1; color:var(--no)}
+
+/* ───────── Explicación ───────── */
+.explica{
+  border:1.5px solid var(--linea);
+  border-radius:22px;
+  padding:18px 20px;
+  display:flex; flex-direction:column; gap:8px;
+  animation:entra .3s ease both;
+}
+.correcta-txt{font-weight:700; font-size:.98rem; line-height:1.35}
+.explica-txt{font-size:.92rem; line-height:1.5; color:var(--tenue)}
+
+/* ───────── Resultado ───────── */
+.medalla{position:relative; width:150px; height:150px; margin:8px auto 2px}
+.medalla svg{width:100%; height:100%; transform:rotate(-90deg)}
+.medalla .pista{fill:none; stroke:rgba(255,255,255,.15); stroke-width:8}
+.medalla .arco{
+  fill:none; stroke:url(#gradArco); stroke-width:8; stroke-linecap:round;
+  stroke-dasharray:327; stroke-dashoffset:327;
+  transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+}
+.medalla-txt{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center; gap:2px;
+}
+.medalla-txt strong{font-size:2.6rem; font-weight:700; line-height:1}
+.medalla-txt span{font-size:1.1rem; color:var(--tenue); align-self:flex-end; padding-bottom:8px}
+
+.repaso{list-style:none; width:100%; display:flex; flex-direction:column; gap:8px; text-align:left}
+.repaso li{
+  display:flex; gap:10px; align-items:flex-start;
+  font-size:.86rem; line-height:1.4; color:var(--tenue);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  padding-bottom:8px;
+}
+.repaso li:last-child{border-bottom:0}
+.repaso .ico{flex:0 0 auto; font-weight:700}
+.repaso .ok{color:var(--ok)}
+.repaso .no{color:var(--no)}
+
+/* ───────── Pie ───────── */
+.pie{
+  width:100%; max-width:var(--ancho);
+  padding:16px 22px calc(18px + env(safe-area-inset-bottom));
+  font-size:.74rem; line-height:1.5; color:rgba(255,255,255,.35);
+  text-align:center;
+}
+.pie strong{color:rgba(255,255,255,.55); font-weight:700}
+
+@media (min-width:560px){
+  .pregunta{font-size:1.55rem}
+  .cuerpo{padding:26px 28px 10px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important; transition-duration:.01ms !important}
+}

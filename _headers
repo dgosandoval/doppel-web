@@ -11,3 +11,13 @@
   Cache-Control: no-cache, must-revalidate
 /latam360/lib/*
   Cache-Control: no-cache, must-revalidate
+
+# Demo trivia LATAM (Semana de la Seguridad): sin caché mientras se está iterando.
+/latam-seguridad/index.html
+  Cache-Control: no-cache, must-revalidate
+/latam-seguridad/app.js
+  Cache-Control: no-cache, must-revalidate
+/latam-seguridad/preguntas.js
+  Cache-Control: no-cache, must-revalidate
+/latam-seguridad/style.css
+  Cache-Control: no-cache, must-revalidate

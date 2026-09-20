@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Cuánto sabes? · Alcohol y Drogas · LATAM</title>
+<meta name="description" content="Trivia online del Programa Alcohol y Drogas — Semana de la Seguridad. Demo Doppel.">
+<meta name="theme-color" content="#180086">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/latam.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="fone" id="app">
+
+  <!-- ───────── Portada ───────── -->
+  <section class="pantalla activa" id="p-inicio">
+    <img class="hero" src="assets/hero.png" alt="¿Cuánto sabes? De alcohol y drogas — Programa Alcohol y Drogas, LATAM">
+    <div class="cuerpo">
+      <p class="bajada">Eleva tu conciencia sobre el uso de alcohol y drogas en tu entorno laboral.</p>
+      <form id="form-inicio" autocomplete="off">
+        <label class="campo">
+          <span>Tu nombre <em>(opcional)</em></span>
+          <input type="text" id="nombre" maxlength="40" placeholder="Para personalizar tu resultado">
+        </label>
+        <button class="boton" type="submit">Comenzar</button>
+      </form>
+      <p class="mini" id="mini-inicio"></p>
+    </div>
+    <img class="latam" src="assets/latam.png" alt="LATAM">
+  </section>
+
+  <!-- ───────── Juego ───────── -->
+  <section class="pantalla" id="p-juego">
+    <img class="header" src="assets/header.png" alt="Programa Alcohol y Drogas — La seguridad se eleva contigo">
+
+    <div class="barra-sup">
+      <span class="contador" id="contador">1 / 10</span>
+      <div class="progreso" aria-hidden="true"><i id="progreso-fill"></i></div>
+      <span class="puntaje" id="puntaje">0 pts</span>
+    </div>
+
+    <div class="cronometro" aria-hidden="true"><i id="crono-fill"></i></div>
+
+    <div class="cuerpo">
+      <h1 class="pregunta" id="pregunta">—</h1>
+      <ul class="opciones" id="opciones" role="listbox" aria-label="Alternativas"></ul>
+
+      <div class="explica" id="explica" hidden>
+        <p class="correcta-txt" id="correcta-txt"></p>
+        <p class="explica-txt" id="explica-txt"></p>
+      </div>
+
+      <button class="boton" id="siguiente" hidden>Siguiente</button>
+    </div>
+
+    <img class="latam" src="assets/latam.png" alt="LATAM">
+  </section>
+
+  <!-- ───────── Resultado ───────── -->
+  <section class="pantalla" id="p-fin">
+    <img class="header" src="assets/header.png" alt="Programa Alcohol y Drogas — La seguridad se eleva contigo">
+    <div class="cuerpo centro">
+      <div class="medalla">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="gradArco" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#950065"/>
+              <stop offset="100%" stop-color="#E6004F"/>
+            </linearGradient>
+          </defs>
+          <circle class="pista" cx="60" cy="60" r="52"></circle>
+          <circle class="arco" id="arco" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="medalla-txt"><strong id="fin-aciertos">0</strong><span id="fin-total">/10</span></div>
+      </div>
+      <h1 class="titulo-fin" id="fin-titulo">—</h1>
+      <p class="bajada" id="fin-mensaje"></p>
+      <p class="mini" id="fin-detalle"></p>
+      <ul class="repaso" id="repaso"></ul>
+      <button class="boton" id="reiniciar">Jugar de nuevo</button>
+    </div>
+    <img class="latam" src="assets/latam.png" alt="LATAM">
+  </section>
+
+</main>
+
+<footer class="pie">
+  <span>Demo desarrollado por <strong>Doppel</strong> para la Activación Semana de la Seguridad · LATAM. Las respuestas no se registran.</span>
+</footer>
+
+<script src="preguntas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
