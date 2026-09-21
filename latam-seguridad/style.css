@@ -197,7 +197,6 @@ body::before{
 /* Con el panel abierto la arena cede el alto que ocupa el panel y lo que queda
    se alinea bajo la pregunta (si no, la alternativa sobreviviente queda flotando). */
 .arena.con-panel{overflow-y:auto}
-.arena.con-panel .opciones{justify-content:flex-start}
 
 /* Al responder, las alternativas que no son la elegida ni la correcta se
    repliegan: quedan a la vista solo las dos que importan, sin texto de sobra. */
@@ -216,8 +215,8 @@ body::before{
 }
 
 .opciones{
-  list-style:none; flex:1 1 auto; min-height:0;
-  display:flex; flex-direction:column; gap:10px; justify-content:space-evenly;
+  list-style:none; flex:0 1 auto; min-height:0;
+  display:flex; flex-direction:column; gap:12px;
 }
 /* Cada tarjeta mide lo que pide su texto; el aire sobrante lo reparte
    ajustarTexto() entre relleno (con tope) y separación, para que no queden

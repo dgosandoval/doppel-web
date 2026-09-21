@@ -263,9 +263,14 @@
 
     // Reparto del espacio sobrante: hasta 22 px extra de relleno por tarjeta;
     // lo que quede se convierte en separación (space-evenly en el CSS).
-    var sobra = opciones.clientHeight - opciones.scrollHeight;
+    // Lo que sobra engorda las tarjetas hasta un tope; el resto queda como aire
+    // al pie. Se mide contra la posición real de la última tarjeta: scrollHeight
+    // nunca baja de clientHeight y daba siempre cero.
+    var tope = arena.getBoundingClientRect().bottom -
+               parseFloat(getComputedStyle(arena).paddingBottom || 0);
+    var sobra = tope - opciones.getBoundingClientRect().bottom;
     if (sobra > 0) {
-      var extra = Math.min(22, Math.floor(sobra / botones.length / 2));
+      var extra = Math.min(40, Math.floor(sobra / botones.length / 2));
       botones.forEach(function (b) {
         b.style.paddingTop = (relleno + extra) + 'px';
         b.style.paddingBottom = (relleno + extra) + 'px';
@@ -432,7 +437,7 @@
     el.classList.add('salta');
     setTimeout(function () { el.classList.remove('salta'); }, 200);
     (function paso(ahora) {
-      var k = Math.min(1, (ahora - t0) / 600);
+      var k = Math.min(1, Math.max(0, (ahora - t0) / 600));
       var v = Math.round(desde + (hasta - desde) * (1 - Math.pow(1 - k, 3)));
       el.textContent = v;
       estado.mostrado = v;
@@ -522,7 +527,7 @@
   function contarPuntos() {
     var el = $('fin-puntos'), hasta = estado.puntos, t0 = performance.now();
     (function paso(ahora) {
-      var k = Math.min(1, (ahora - t0) / 1100);
+      var k = Math.min(1, Math.max(0, (ahora - t0) / 1100));
       el.textContent = Math.round(hasta * (1 - Math.pow(1 - k, 3)));
       if (k < 1) requestAnimationFrame(paso);
     })(performance.now());
