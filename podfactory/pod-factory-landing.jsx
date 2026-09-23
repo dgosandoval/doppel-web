@@ -58,6 +58,31 @@ function CTAButtons({ size = 'md', waContext = 'quiero hacer mi podcast con Pod 
   );
 }
 
+// CTA principal del funnel: reservar el capítulo piloto (baja al calendario).
+function PilotoButton({ size = 'md', label = 'RESERVAR CAPÍTULO PILOTO', style = {} }) {
+  const pad = size === 'lg' ? '16px 26px' : size === 'sm' ? '11px 18px' : '14px 22px';
+  return (
+    <a href="#reservar" style={{
+      padding: pad, fontSize: size === 'sm' ? 12 : 13, fontWeight: 800, letterSpacing: '0.08em',
+      fontFamily: PF.display, textDecoration: 'none', borderRadius: 999, background: PF.red, color: PF.bg,
+      display: 'inline-flex', alignItems: 'center', gap: 10, lineHeight: 1, ...style,
+    }}>{label} →</a>
+  );
+}
+
+// Botón secundario: WhatsApp para dudas.
+function DudasButton({ size = 'md', label = '¿DUDAS? WHATSAPP', waContext = 'tengo una duda sobre Pod Factory.', dark = false }) {
+  const pad = size === 'lg' ? '15px 24px' : size === 'sm' ? '10px 16px' : '13px 20px';
+  const c = dark ? PF.bg : PF.ink;
+  return (
+    <a href={waLink(waContext)} target="_blank" rel="noopener" style={{
+      padding: pad, fontSize: size === 'sm' ? 12 : 13, fontWeight: 700, letterSpacing: '0.08em', fontFamily: PF.display,
+      textDecoration: 'none', borderRadius: 999, border: `1.5px solid ${c}`, color: c,
+      display: 'inline-flex', alignItems: 'center', gap: 10, lineHeight: 1,
+    }}>{label} <WhatsAppIcon size={15} color={dark ? PF.bg : '#25D366'} /></a>
+  );
+}
+
 // CTA flotante (WhatsApp) — aparece al desplazar, no al inicio
 // (donde ya están los del hero), para no duplicar en pantalla.
 function FloatingCTA() {
@@ -212,7 +237,8 @@ function PodFactoryLanding() {
         <nav style={{ display: 'flex', gap: 24, fontSize: 13, fontWeight: 500 }}>
           {[
             ['Cómo trabajamos', '#como'],
-            ['Dónde grabamos', '#donde'],
+            ['Estudio', '#ubicacion'],
+            ['Locación', '#donde'],
             ['Temporadas', '#temporadas'],
             ['Piloto', '#reservar'],
             ['Condiciones', '#condiciones'],
@@ -221,34 +247,33 @@ function PodFactoryLanding() {
             <a key={l} href={h} style={{ color: PF.ink, textDecoration: 'none' }}>{l}</a>
           ))}
         </nav>
-        <div className="pf-header-cta"><CTAButtons size="sm" waContext="quiero hacer mi podcast con Pod Factory." /></div>
+        <div className="pf-header-cta"><PilotoButton size="sm" label="RESERVAR PILOTO" /></div>
       </header>
 
       {/* Hero */}
       <section id="espacio" className="pf-hero" style={{ padding: '60px 80px 40px 32px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 28, alignItems: 'center' }}>
         <Reveal>
           <div style={{ fontSize: 11, fontFamily: PF.mono, letterSpacing: '0.18em', marginBottom: 18 }}>
-            ▸ PRODUCTORA DE PODCAST &amp; VODCAST · BY DOPPEL
+            ▸ ESTUDIO Y PRODUCTORA DE PODCAST · VITACURA · BY DOPPEL
           </div>
           <h1 style={{
             fontFamily: PF.display, fontWeight: 900, fontSize: 76, lineHeight: 0.95,
             letterSpacing: '-0.04em', margin: 0,
           }}>
-            Producimos tu <span style={{ color: PF.red }}>podcast</span>.<br />
-            <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400 }}>Donde sea.</span>
+            Tu <span style={{ color: PF.red }}>podcast</span>, en nuestro<br />
+            estudio. <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400 }}>O donde estés.</span>
           </h1>
           <p style={{ fontSize: 17, lineHeight: 1.55, maxWidth: 560, marginTop: 22 }}>
-            Somos la productora de podcasts de Doppel. Te ayudamos a definir el formato,
-            grabamos con set multicámara y te entregamos cada capítulo editado, listo para publicar.
-            En nuestro estudio en Vitacura, en tu oficina, en un evento o en cualquier lugar.
+            Un estudio de podcast en Vitacura, listo para grabar: set multicámara, audio broadcast
+            y un director a cargo. Y como somos productora, también te ayudamos con el formato
+            y llevamos el set a tu oficina, a un evento o a donde lo necesites.
           </p>
           <div className="pf-hero-cta" style={{ display: 'flex', gap: 12, marginTop: 28, alignItems: 'center', flexWrap: 'wrap' }}>
-            <CTAButtons size="lg" label="QUIERO MI PODCAST" />
-            <a href="#temporadas" style={{
-              background: 'transparent', color: PF.ink, border: `1.5px solid ${PF.ink}`,
-              padding: '16px 26px', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em',
-              fontFamily: PF.display, textDecoration: 'none', display: 'inline-block', borderRadius: 999,
-            }}>VER TEMPORADAS Y PRECIOS</a>
+            <PilotoButton size="lg" />
+            <DudasButton size="lg" />
+          </div>
+          <div style={{ fontFamily: PF.mono, fontSize: 12, marginTop: 14, color: PF.ink + 'aa' }}>
+            Piloto $300.000 + IVA · se descuenta si contratas la temporada · <a href="#temporadas" style={{ color: PF.blue }}>ver temporadas y precios</a>
           </div>
         </Reveal>
 
@@ -277,7 +302,7 @@ function PodFactoryLanding() {
       }}>
         {[
           ['+300', 'episodios producidos', PF.blue],
-          ['2', 'formas: estudio o locación', PF.red],
+          ['Vitacura', 'estudio propio · o locación', PF.red],
           ['5 días', 'hábiles de entrega', PF.orange],
           ['6+', 'capítulos por temporada', PF.yellow],
         ].map(([n, l, c], i) => (
@@ -381,10 +406,47 @@ function PodFactoryLanding() {
             </p>
             <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 20px', fontSize: 14, lineHeight: 1.9, color: PF.bg + 'dd' }}>
               {['Jornadas desde 2 capítulos', 'Montaje, operación y traslado incluidos', 'Espacio mínimo de 4 × 4 m y 2 enchufes'].map((t) => <li key={t}>▸ {t}</li>)}
+              <li style={{ marginTop: 8, color: PF.yellow }}>▸ Tarifas distintas a las del estudio: se cotiza por jornada.</li>
             </ul>
             <div style={{ marginTop: 'auto' }}>
               <CTAButtons label="COTIZAR UNA LOCACIÓN" waContext="quiero cotizar una grabación en locación." />
             </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Dónde está el estudio — mapa */}
+      <section id="ubicacion" style={{ padding: '70px 32px 60px' }}>
+        <Reveal style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 20, flexWrap: 'wrap', marginBottom: 24 }}>
+          <div>
+            <Kicker>▸ EL ESTUDIO</Kicker>
+            <H2>Dónde <Serif color={PF.blue}>estamos.</Serif></H2>
+          </div>
+          <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.1em', color: PF.ink + 'aa' }}>VITACURA · SANTIAGO · LUNES A VIERNES</div>
+        </Reveal>
+        <div className="pf-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1.4fr', gap: 24, alignItems: 'stretch' }}>
+          <Reveal delay={150} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 18, padding: '24px 26px', border: `1.5px solid ${PF.ink}`, background: PF.bg }}>
+            <div>
+              <div style={{ fontFamily: PF.mono, fontSize: 10, letterSpacing: '0.18em', marginBottom: 10, color: PF.ink + 'aa', fontWeight: 700 }}>📍 DIRECCIÓN</div>
+              <div style={{ fontWeight: 800, fontSize: 26, letterSpacing: '-0.025em', lineHeight: 1.1 }}>Eduardo Marquina 3937, Of. 906</div>
+              <div style={{ fontSize: 18, marginTop: 4, color: PF.ink + 'cc' }}>Vitacura · Santiago, Chile</div>
+            </div>
+            <div style={{ fontSize: 14, lineHeight: 1.55, color: PF.ink + 'cc' }}>
+              Set listo, iluminado y calibrado, con dos versiones: Base, o Full con paneles de madera y un televisor con tu logo.
+              A pasos de Av. Vitacura, con estacionamiento en la calle.
+            </div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Pod+Factory+Premium+Podcast+Studio&destination_place_id=ChIJX7coTmnPYpYRahuOLfgXst0" target="_blank" rel="noopener"
+                style={{ background: PF.ink, color: PF.bg, padding: '12px 18px', fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textDecoration: 'none', borderRadius: 999 }}>CÓMO LLEGAR ↗</a>
+              <a href="#reservar" style={{ background: 'transparent', color: PF.ink, border: `1.5px solid ${PF.ink}`, padding: '12px 18px', fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textDecoration: 'none', borderRadius: 999 }}>RESERVAR UN PILOTO</a>
+            </div>
+          </Reveal>
+          <Reveal delay={250} style={{ position: 'relative', minHeight: 340, border: `1.5px solid ${PF.ink}`, overflow: 'hidden' }}>
+            <iframe
+              title="Pod Factory · Eduardo Marquina 3937, Vitacura"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3330.899404141137!2d-70.59428838915612!3d-33.399788573298764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662cf694e28b75f%3A0xddb217f82d8e1b6a!2sPod%20Factory%2C%20Premium%20Podcast%20Studio!5e0!3m2!1ses!2scl!4v1780004708510!5m2!1ses!2scl"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block', filter: 'grayscale(0.2) contrast(1.05)' }}
+              loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
           </Reveal>
         </div>
       </section>
@@ -441,7 +503,10 @@ function PodFactoryLanding() {
           ))}
         </div>
         <Reveal delay={250} style={{ marginTop: 28 }}>
-          <CTAButtons size="lg" label="QUIERO UNA TEMPORADA" waContext="quiero contratar una temporada de mi podcast." />
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <PilotoButton size="lg" label="PARTE CON UN PILOTO" />
+            <DudasButton size="lg" label="CONTRATAR LA TEMPORADA POR WHATSAPP" waContext="quiero contratar una temporada de mi podcast." />
+          </div>
         </Reveal>
       </section>
 
@@ -700,7 +765,7 @@ function PodFactoryLanding() {
           {[
             {
               q: '¿Son un estudio o una productora?',
-              a: <>Somos una <b>productora de podcasts</b>. Te ayudamos a definir el formato, grabamos, editamos y entregamos cada capítulo listo para publicar. Tenemos estudio propio en Vitacura, pero también grabamos <b>donde estés</b>: tu oficina, un evento, una casa o cualquier lugar, en Santiago y regiones.</>,
+              a: <>Las dos cosas. Tenemos <b>estudio propio en Vitacura</b> (Eduardo Marquina 3937), donde se graban las temporadas, y como productora te ayudamos con el formato, editamos y entregamos cada capítulo listo para publicar. También grabamos <b>en locación</b> (tu oficina, un evento o cualquier lugar, en Santiago y regiones), con tarifas distintas que se cotizan por jornada.</>,
             },
             {
               q: '¿Puedo grabar un solo capítulo?',
