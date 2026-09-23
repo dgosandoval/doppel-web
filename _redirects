@@ -1,3 +1,7 @@
-# Ruta antigua de la sección Pod Factory → nueva ruta canónica
-/pod_factory /podfactory/ 301
-/pod_factory/* /podfactory/:splat 301
+# Pod Factory vuelve a su dominio propio (sep-2026): todo lo de /podfactory va a podfactory.cl
+/podfactory https://podfactory.cl/ 301
+/podfactory/ https://podfactory.cl/ 301
+/podfactory/* https://podfactory.cl/:splat 301
+# Ruta antigua de la sección Pod Factory
+/pod_factory https://podfactory.cl/ 301
+/pod_factory/* https://podfactory.cl/:splat 301
