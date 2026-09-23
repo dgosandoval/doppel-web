@@ -329,6 +329,30 @@ function PodFactoryLanding() {
         </div>
       </section>
 
+      {/* Equipo */}
+      <section id="equipo-pf" style={{ padding: '10px 32px 70px' }}>
+        <Reveal style={{ marginBottom: 26 }}>
+          <Kicker>▸ EL EQUIPO</Kicker>
+          <H2>Quiénes producen <Serif color={PF.red}>tu podcast.</Serif></H2>
+        </Reveal>
+        <div className="pf-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, maxWidth: 980 }}>
+          {[
+            ['assets/equipo-ivan.jpg', 'Iván Krug', 'DIRECTOR DEL ESTUDIO', 'Director de cine y publicidad en Ojo de Buey. Está a cargo de cada grabación en el estudio: el set, las cámaras, la luz y que cada capítulo salga bien.', 'https://ojodebuey.film/ivan-krug/', PF.blue],
+            ['assets/equipo-domingo.jpg', 'Domingo Sandoval', 'PRODUCTOR EJECUTIVO', 'Fundador de Doppel y de Pod Factory. Diseña el formato de cada podcast y acompaña cada temporada de principio a fin.', null, PF.red],
+          ].map(([src, name, role, bio, link, c], i) => (
+            <Reveal key={name} delay={100 + i * 120} style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: 18, alignItems: 'start', borderTop: `5px solid ${c}`, paddingTop: 16 }}>
+              <img src={src} alt={name} loading="lazy" style={{ width: 150, height: 150, objectFit: 'cover', display: 'block', border: `1.5px solid ${PF.ink}` }} />
+              <div>
+                <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.14em', fontWeight: 700, color: c }}>{role}</div>
+                <div style={{ fontWeight: 900, fontSize: 26, letterSpacing: '-0.02em', marginTop: 4 }}>{name}</div>
+                <p style={{ fontSize: 14.5, lineHeight: 1.55, color: PF.ink + 'bb', marginTop: 8 }}>{bio}</p>
+                {link && <a href={link} target="_blank" rel="noopener" style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.1em', fontWeight: 700, color: PF.blue }}>VER SU TRABAJO →</a>}
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* Dónde grabamos — estudio o locación */}
       <section id="donde" style={{ padding: '60px 32px', background: PF.ink, color: PF.bg }}>
         <Reveal style={{ marginBottom: 30 }}>
