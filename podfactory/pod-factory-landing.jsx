@@ -1,6 +1,7 @@
 // Pod Factory — sección de podcasts dentro de doppel.cl.
-// Versión sin estudio físico: producción móvil/en locación, sin tarifas ni
-// reservas online; todo el funnel dirige a WhatsApp.
+// Posicionamiento: productora de podcasts que graba donde sea (estudio propio en
+// Vitacura o locación). Temporadas con precios publicados, piloto reservable con
+// calendario (API en podfactory.cl) y condiciones claras. El resto va a WhatsApp.
 
 const PF = {
   bg: '#F5EBD6',
@@ -125,9 +126,51 @@ function PFRays({ height = 10, gap = 3, width = '100%' }) {
   );
 }
 
+// Tipografía y piezas reutilizadas por las secciones nuevas.
+const H2 = ({ children, style = {} }) => (
+  <h2 style={{ fontFamily: PF.display, fontWeight: 900, fontSize: 56, letterSpacing: '-0.04em', margin: 0, lineHeight: 0.95, ...style }}>{children}</h2>
+);
+const Serif = ({ children, color }) => (
+  <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400, color }}>{children}</span>
+);
+const Kicker = ({ children, color }) => (
+  <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.2em', marginBottom: 14, color }}>{children}</div>
+);
+const fmtCLP = (n) => '$' + Number(n).toLocaleString('es-CL');
+
+const TEMPORADAS = [
+  { caps: 6, dto: '—', base: 200000, full: 300000, min: true },
+  { caps: 8, dto: '−5%', base: 190000, full: 285000, star: true },
+  { caps: 10, dto: '−10%', base: 180000, full: 270000 },
+  { caps: 12, dto: '−15%', base: 170000, full: 255000 },
+];
+
+// Aviso al volver de MercadoPago (?reserva=ok|error|pendiente).
+function ReservaBanner() {
+  const estado = React.useMemo(() => new URLSearchParams(window.location.search).get('reserva'), []);
+  const [open, setOpen] = React.useState(!!estado);
+  React.useEffect(() => {
+    if (estado) setTimeout(() => document.getElementById('reservar')?.scrollIntoView({ behavior: 'smooth' }), 400);
+  }, [estado]);
+  if (!open || !estado) return null;
+  const msg = {
+    ok: ['¡Listo! Tu capítulo piloto quedó reservado.', 'Te enviamos un correo con la confirmación, la dirección y el link para cambiar la fecha si lo necesitas.', '#1f7a3f'],
+    pendiente: ['Tu pago está en proceso.', 'Apenas MercadoPago lo apruebe te llega el correo de confirmación.', PF.orange],
+    error: ['El pago no se completó.', 'No se hizo ningún cargo. Puedes intentarlo de nuevo o escribirnos por WhatsApp.', PF.red],
+  }[estado] || null;
+  if (!msg) return null;
+  return (
+    <div style={{ background: msg[2], color: '#fff', padding: '16px 32px', display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center' }}>
+      <div><b style={{ fontSize: 16 }}>{msg[0]}</b> <span style={{ fontSize: 14, opacity: 0.92 }}>{msg[1]}</span></div>
+      <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: '1.5px solid #fff', color: '#fff', borderRadius: 999, padding: '6px 12px', cursor: 'pointer', fontFamily: PF.mono, fontSize: 11 }}>CERRAR</button>
+    </div>
+  );
+}
+
 function PodFactoryLanding() {
   return (
     <div style={{ background: PF.bg, color: PF.ink, fontFamily: PF.display, minHeight: '100%' }}>
+      <ReservaBanner />
       {/* Parent brand bar — signals Pod Factory is part of Doppel ecosystem */}
       <div className="pf-brandbar" style={{
         background: PF.ink, color: PF.bg, padding: '10px 32px',
@@ -144,7 +187,7 @@ function PodFactoryLanding() {
           }}>DOPPEL ↗</a>
           <span className="pf-bb-hide-mobile" style={{ color: PF.bg + '50', marginLeft: 6 }}>(estudio creativo + lab)</span>
         </div>
-        <span className="pf-bb-hide-mobile" style={{ color: PF.bg + '80' }}>PODCAST · VODCAST</span>
+        <span className="pf-bb-hide-mobile" style={{ color: PF.bg + '80' }}>PRODUCTORA DE PODCAST · VODCAST</span>
       </div>
 
       {/* Header with Doppel logo + Pod Factory marker */}
@@ -160,31 +203,22 @@ function PodFactoryLanding() {
             paddingLeft: 14, borderLeft: `1.5px solid ${PF.ink}30`,
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
-            <img
-              className="pf-logo-img"
-              src="assets/podfactory-logo.png"
-              alt="Pod Factory"
-              style={{ height: 48, display: 'block' }}
-            />
+            <img className="pf-logo-img" src="assets/podfactory-logo.png" alt="Pod Factory" style={{ height: 48, display: 'block' }} />
             <div className="pf-header-sub" style={{ fontFamily: PF.mono, fontSize: 9, fontWeight: 700, letterSpacing: '0.18em', color: PF.ink + '99', lineHeight: 1.4 }}>
-              PODCAST · VODCAST<br />EST. 2024
+              PRODUCTORA DE<br />PODCAST · EST. 2024
             </div>
           </div>
         </div>
-        <nav style={{ display: 'flex', gap: 26, fontSize: 13, fontWeight: 500 }}>
+        <nav style={{ display: 'flex', gap: 24, fontSize: 13, fontWeight: 500 }}>
           {[
-            ['Servicios',    '#servicios',   false],
-            ['Producciones', '#producciones', false],
-            ['Equipo técnico', '#equipo',    false],
-            ['Preguntas',    '#faq',         false],
-            ['Contacto',     waLink('quiero conversar con Pod Factory.'), true],
-          ].map(([l, h, ext]) => (
-            <a
-              key={l}
-              href={h}
-              {...(ext ? { target: '_blank', rel: 'noopener' } : {})}
-              style={{ color: PF.ink, textDecoration: 'none' }}
-            >{l}</a>
+            ['Cómo trabajamos', '#como'],
+            ['Dónde grabamos', '#donde'],
+            ['Temporadas', '#temporadas'],
+            ['Piloto', '#reservar'],
+            ['Condiciones', '#condiciones'],
+            ['Preguntas', '#faq'],
+          ].map(([l, h]) => (
+            <a key={l} href={h} style={{ color: PF.ink, textDecoration: 'none' }}>{l}</a>
           ))}
         </nav>
         <div className="pf-header-cta"><CTAButtons size="sm" waContext="quiero hacer mi podcast con Pod Factory." /></div>
@@ -194,56 +228,42 @@ function PodFactoryLanding() {
       <section id="espacio" className="pf-hero" style={{ padding: '60px 80px 40px 32px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 28, alignItems: 'center' }}>
         <Reveal>
           <div style={{ fontSize: 11, fontFamily: PF.mono, letterSpacing: '0.18em', marginBottom: 18 }}>
-            ▸ PRODUCCIÓN DE PODCAST &amp; VODCAST · BY DOPPEL
+            ▸ PRODUCTORA DE PODCAST &amp; VODCAST · BY DOPPEL
           </div>
           <h1 style={{
             fontFamily: PF.display, fontWeight: 900, fontSize: 76, lineHeight: 0.95,
             letterSpacing: '-0.04em', margin: 0,
           }}>
-            Tu <span style={{ color: PF.red }}>podcast</span> con<br />
-            calidad <span style={{ color: PF.blue }}>profesional</span><br />
-            a la altura de <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400 }}>tu contenido.</span>
+            Producimos tu <span style={{ color: PF.red }}>podcast</span>.<br />
+            <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400 }}>Donde sea.</span>
           </h1>
-          <p style={{ fontSize: 16, lineHeight: 1.5, maxWidth: 540, marginTop: 22 }}>
-            La casa de podcasts de Doppel: setup multicámara broadcast,
-            masterización incluida, y un equipo que produce, edita y distribuye.
-            Grabamos donde estés — tu oficina, una locación, un evento.
-            Tú hablas. Nosotros hacemos el resto.
+          <p style={{ fontSize: 17, lineHeight: 1.55, maxWidth: 560, marginTop: 22 }}>
+            Somos la productora de podcasts de Doppel. Te ayudamos a definir el formato,
+            grabamos con set multicámara y te entregamos cada capítulo editado, listo para publicar.
+            En nuestro estudio en Vitacura, en tu oficina, en un evento o en cualquier lugar.
           </p>
           <div className="pf-hero-cta" style={{ display: 'flex', gap: 12, marginTop: 28, alignItems: 'center', flexWrap: 'wrap' }}>
             <CTAButtons size="lg" label="QUIERO MI PODCAST" />
-            <a href="#producciones" style={{
+            <a href="#temporadas" style={{
               background: 'transparent', color: PF.ink, border: `1.5px solid ${PF.ink}`,
               padding: '16px 26px', fontSize: 13, fontWeight: 700, letterSpacing: '0.1em',
-              fontFamily: PF.display, textDecoration: 'none', display: 'inline-block',
-              borderRadius: 999,
-            }}>VER PRODUCCIONES</a>
+              fontFamily: PF.display, textDecoration: 'none', display: 'inline-block', borderRadius: 999,
+            }}>VER TEMPORADAS Y PRECIOS</a>
           </div>
         </Reveal>
 
-        {/* Studio preview tile — looping reel */}
+        {/* Reel de portada */}
         <Reveal delay={250} className="pf-reel" style={{ position: 'relative', width: 320 }}>
-          <div style={{
-            aspectRatio: '9/16', background: PF.ink, position: 'relative', overflow: 'hidden',
-          }}>
-            <video
-              src="assets/reel-portada.mp4"
-              autoPlay muted loop playsInline
-              style={{
-                position: 'absolute', inset: 0, width: '100%', height: '100%',
-                objectFit: 'cover', display: 'block',
-              }}
-            />
+          <div style={{ aspectRatio: '9/16', background: PF.ink, position: 'relative', overflow: 'hidden' }}>
+            <video src="assets/reel-portada.mp4" autoPlay muted loop playsInline
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
             <div style={{
-              position: 'absolute', bottom: 14, left: 14, right: 14,
-              background: PF.yellow, padding: '10px 14px',
-              fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.1em',
-              fontWeight: 700, textAlign: 'center',
+              position: 'absolute', bottom: 14, left: 14, right: 14, background: PF.yellow, padding: '10px 14px',
+              fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.1em', fontWeight: 700, textAlign: 'center',
             }}>
-              SETUP MULTICÁMARA BROADCAST · DONDE ESTÉS
+              SET MULTICÁMARA · DONDE ESTÉS
             </div>
           </div>
-          {/* Ray decoration */}
           <div style={{ position: 'absolute', top: -10, right: -10 }}>
             <PFRays height={8} gap={3} width={80} />
           </div>
@@ -256,51 +276,248 @@ function PodFactoryLanding() {
         borderTop: `2px solid ${PF.ink}`, borderBottom: `2px solid ${PF.ink}`,
       }}>
         {[
-          ['4', 'cámaras 6K/4K', PF.blue],
-          ['+300', 'episodios producidos', PF.red],
-          ['24h', 'entrega masterizada', PF.orange],
-          ['100%', 'móvil · donde estés', PF.yellow],
+          ['+300', 'episodios producidos', PF.blue],
+          ['2', 'formas: estudio o locación', PF.red],
+          ['5 días', 'hábiles de entrega', PF.orange],
+          ['6+', 'capítulos por temporada', PF.yellow],
         ].map(([n, l, c], i) => (
-          <Reveal key={i} delay={i * 120} style={{
-            padding: '30px 20px', borderRight: i < 3 ? `1.5px solid ${PF.ink}` : 'none',
-            position: 'relative',
-          }}>
+          <Reveal key={i} delay={i * 120} style={{ padding: '30px 20px', borderRight: i < 3 ? `1.5px solid ${PF.ink}` : 'none', position: 'relative' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 6, background: c }} />
             <div style={{ fontFamily: PF.display, fontSize: 54, fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>{n}</div>
-            <div style={{ fontFamily: PF.mono, fontSize: 12, letterSpacing: '0.08em', marginTop: 6, color: PF.ink + 'aa' }}>
-              {l.toUpperCase()}
-            </div>
+            <div style={{ fontFamily: PF.mono, fontSize: 12, letterSpacing: '0.08em', marginTop: 6, color: PF.ink + 'aa' }}>{l.toUpperCase()}</div>
           </Reveal>
         ))}
       </section>
 
-      {/* What you get */}
-      <section id="servicios" style={{ padding: '60px 32px' }}>
-        <Reveal style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 24 }}>
-          <h2 style={{ fontFamily: PF.display, fontWeight: 800, fontSize: 48, letterSpacing: '-0.035em', margin: 0 }}>
-            Qué incluye tu <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400, color: PF.red }}>sesión</span>
-          </h2>
-          <div style={{ fontFamily: PF.mono, fontSize: 11 }}>TODO INCLUIDO</div>
+      {/* Cómo trabajamos — productora de punta a punta */}
+      <section id="como" style={{ padding: '70px 32px 60px' }}>
+        <Reveal style={{ marginBottom: 30 }}>
+          <Kicker>▸ CÓMO TRABAJAMOS</Kicker>
+          <H2>No arrendamos un estudio.<br /><Serif color={PF.red}>Producimos tu podcast.</Serif></H2>
         </Reveal>
-
-        <div className="pf-services" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="pf-steps" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
           {[
-            ['Grabación multicámara', 'Cuatro Blackmagic Pocket (2×6K + 2×4K) con switcher ATEM Extreme ISO en vivo. Entregamos bruto + master editado.', PF.blue],
-            ['Audio broadcast', 'Micrófonos RØDE PodMic con procesamiento en tiempo real. Master de sonido en Fairlight (DaVinci Resolve).', PF.red],
-            ['Dirección & producción', 'Un productor dedicado, guía de entrevista, y edición de primer corte.', PF.orange],
-            ['Streaming opcional', 'Transmisión en vivo a YouTube, Spotify Video o tu plataforma.', PF.yellow],
-            ['Estudio móvil', 'El estudio va donde estés: tu oficina, una locación, un evento. Santiago y regiones.', PF.blue],
-            ['Distribución (con Teaser)', 'Subimos por ti a Spotify, Apple Podcasts, YouTube, Amazon. Incluido al elegir el Teaser.', PF.red],
-          ].map(([t, d, c], i) => (
-            <Reveal key={i} delay={150 + i * 100} style={{ border: `1.5px solid ${PF.ink}`, background: PF.bg }}>
+            ['01', 'Formato', 'Definimos contigo la idea, la estructura de cada capítulo, los invitados y la pauta.', PF.blue],
+            ['02', 'Grabación', 'Set multicámara, audio broadcast y un operador en cada grabación. En el estudio o donde estés.', PF.red],
+            ['03', 'Edición', 'Color, sonido, logo, música y nombres en pantalla. Reels para redes si los necesitas.', PF.orange],
+            ['04', 'Entrega', 'Cada capítulo listo para publicar en 5 días hábiles, con la misma calidad toda la temporada.', PF.yellow],
+          ].map(([n, t, d, c], i) => (
+            <Reveal key={n} delay={120 + i * 100} style={{ border: `1.5px solid ${PF.ink}`, background: PF.bg }}>
               <div style={{ height: 6, background: c }} />
-              <div style={{ padding: 18 }}>
-                <div style={{ fontFamily: PF.mono, fontSize: 10, letterSpacing: '0.1em', marginBottom: 10 }}>
-                  0{i + 1}
-                </div>
-                <div style={{ fontFamily: PF.display, fontWeight: 800, fontSize: 22, letterSpacing: '-0.02em' }}>{t}</div>
-                <div style={{ fontSize: 13, lineHeight: 1.45, marginTop: 6, color: PF.ink + 'aa' }}>{d}</div>
+              <div style={{ padding: 20 }}>
+                <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.1em', marginBottom: 12 }}>{n}</div>
+                <div style={{ fontWeight: 800, fontSize: 24, letterSpacing: '-0.02em' }}>{t}</div>
+                <div style={{ fontSize: 14, lineHeight: 1.5, marginTop: 8, color: PF.ink + 'aa' }}>{d}</div>
               </div>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Detrás de cámara — grabación real en el estudio */}
+      <section style={{ padding: '0 32px 60px' }}>
+        <div className="pf-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, maxWidth: 980, margin: '0 auto' }}>
+          {[
+            ['assets/estudio-grabacion-1.jpg', 'Grabación en el estudio: set Full, multicámara y monitoreo en vivo.'],
+            ['assets/estudio-grabacion-2.jpg', 'Lo que ves en el monitor es lo que se entrega: cada cámara, encuadrada y operada.'],
+          ].map(([src, cap], i) => (
+            <Reveal key={src} delay={100 + i * 120} as="figure" style={{ margin: 0 }}>
+              <img src={src} alt={cap} loading="lazy" style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', display: 'block', border: `1.5px solid ${PF.ink}` }} />
+              <figcaption style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.06em', marginTop: 10, color: PF.ink + 'aa' }}>{cap}</figcaption>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Dónde grabamos — estudio o locación */}
+      <section id="donde" style={{ padding: '60px 32px', background: PF.ink, color: PF.bg }}>
+        <Reveal style={{ marginBottom: 30 }}>
+          <PFRays height={8} gap={3} width={160} />
+          <H2 style={{ marginTop: 22 }}>Grabamos <Serif color={PF.yellow}>donde tenga sentido.</Serif></H2>
+        </Reveal>
+        <div className="pf-two" style={{ display: 'grid', gridTemplateColumns: '1.15fr 1fr', gap: 18 }}>
+          <Reveal delay={100} style={{ background: PF.bg, color: PF.ink }}>
+            <div style={{ aspectRatio: '16/7', background: `url(assets/set-full.jpg) center 40% / cover no-repeat` }} />
+            <div style={{ padding: 24 }}>
+              <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.14em', color: PF.red, fontWeight: 700 }}>EN NUESTRO ESTUDIO · VITACURA</div>
+              <div style={{ fontWeight: 900, fontSize: 30, letterSpacing: '-0.03em', marginTop: 8 }}>Temporadas desde {fmtCLP(1200000)} + IVA</div>
+              <p style={{ fontSize: 15, lineHeight: 1.55, color: PF.ink + 'bb', marginTop: 8 }}>
+                Set listo, iluminado y calibrado. Dos versiones: <b>Base</b>, o <b>Full</b> con paneles de madera y un televisor con tu logo.
+                Desde 6 capítulos, con fechas agendadas desde el inicio.
+              </p>
+              <a href="#temporadas" style={{ display: 'inline-block', marginTop: 10, fontFamily: PF.mono, fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', color: PF.blue }}>VER TEMPORADAS →</a>
+            </div>
+          </Reveal>
+          <Reveal delay={220} style={{ border: `1.5px solid ${PF.bg}40`, padding: 28, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.14em', color: PF.yellow, fontWeight: 700 }}>EN LOCACIÓN · DONDE ESTÉS</div>
+            <div style={{ fontWeight: 900, fontSize: 30, letterSpacing: '-0.03em', marginTop: 8 }}>Llevamos el set completo</div>
+            <p style={{ fontSize: 15, lineHeight: 1.55, color: PF.bg + 'cc', marginTop: 8 }}>
+              Cámaras, micrófonos, luces y operador en tu oficina, un evento, una casa, una viña o un set externo.
+              En Santiago y regiones. Mientras más capítulos grabes en la jornada, menor el costo por capítulo.
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 20px', fontSize: 14, lineHeight: 1.9, color: PF.bg + 'dd' }}>
+              {['Jornadas desde 2 capítulos', 'Montaje, operación y traslado incluidos', 'Espacio mínimo de 4 × 4 m y 2 enchufes'].map((t) => <li key={t}>▸ {t}</li>)}
+            </ul>
+            <div style={{ marginTop: 'auto' }}>
+              <CTAButtons label="COTIZAR UNA LOCACIÓN" waContext="quiero cotizar una grabación en locación." />
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Temporadas */}
+      <section id="temporadas" style={{ padding: '70px 32px 60px' }}>
+        <Reveal style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 20, flexWrap: 'wrap', marginBottom: 26 }}>
+          <div>
+            <Kicker>▸ TEMPORADAS EN EL ESTUDIO</Kicker>
+            <H2>Tu podcast, <Serif color={PF.red}>por temporadas.</Serif></H2>
+          </div>
+          <div style={{ fontFamily: PF.mono, fontSize: 12, color: PF.ink + 'aa', maxWidth: 360, lineHeight: 1.6 }}>
+            Mientras más larga la temporada, menor el valor por capítulo. Valores en pesos, más IVA.
+          </div>
+        </Reveal>
+        <Reveal delay={60} style={{ aspectRatio: '4/1', marginBottom: 18, border: `1.5px solid ${PF.ink}`, background: `url(assets/set-full.jpg) center 45% / cover no-repeat` }} />
+        <Reveal delay={120} className="pf-table-wrap" style={{ border: `1.5px solid ${PF.ink}`, background: '#fff' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 15, minWidth: 640 }}>
+            <thead>
+              <tr style={{ background: PF.ink, color: PF.bg }}>
+                {['Temporada', 'Descuento', 'Base · por capítulo', 'Base · total', 'Full · por capítulo', 'Full · total'].map((h, i) => (
+                  <th key={h} style={{ textAlign: i ? 'right' : 'left', padding: '14px 18px', fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.1em', fontWeight: 700 }}>{h.toUpperCase()}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TEMPORADAS.map((t) => (
+                <tr key={t.caps} style={{ background: t.star ? PF.yellow + '40' : 'transparent', borderTop: `1px solid ${PF.ink}20` }}>
+                  <td style={{ padding: '16px 18px', fontWeight: 800, fontSize: 18 }}>
+                    {t.caps} capítulos
+                    {t.min && <span style={{ marginLeft: 10, fontFamily: PF.mono, fontSize: 10, background: PF.ink, color: PF.bg, padding: '3px 8px', letterSpacing: '0.1em' }}>MÍNIMO</span>}
+                    {t.star && <span style={{ marginLeft: 10, fontFamily: PF.mono, fontSize: 10, background: PF.yellow, padding: '3px 8px', letterSpacing: '0.1em' }}>★ MÁS ELEGIDA</span>}
+                  </td>
+                  <td style={{ padding: '16px 18px', textAlign: 'right', fontFamily: PF.mono }}>{t.dto}</td>
+                  <td style={{ padding: '16px 18px', textAlign: 'right' }}>{fmtCLP(t.base)}</td>
+                  <td style={{ padding: '16px 18px', textAlign: 'right', fontWeight: 900 }}>{fmtCLP(t.base * t.caps)}</td>
+                  <td style={{ padding: '16px 18px', textAlign: 'right' }}>{fmtCLP(t.full)}</td>
+                  <td style={{ padding: '16px 18px', textAlign: 'right', fontWeight: 900 }}>{fmtCLP(t.full * t.caps)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Reveal>
+        <div className="pf-steps" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 22 }}>
+          {[
+            ['Cada capítulo incluye', 'Bloque de 1 hora de estudio (el capítulo dura 30–40 min), hasta 4 personas, set multicámara, operador y edición simple.', PF.blue],
+            ['Set Base o Full', 'Full suma paneles de madera y un televisor con tu logo o tus gráficas: +$100.000 por capítulo.', PF.red],
+            ['Pago y agenda', '50% al contratar y 50% a mitad de temporada. Las fechas se agendan al inicio; te recomendamos un día fijo a la semana.', PF.orange],
+          ].map(([t, d, c], i) => (
+            <Reveal key={t} delay={150 + i * 90} style={{ borderTop: `5px solid ${c}`, paddingTop: 12 }}>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>{t}</div>
+              <div style={{ fontSize: 14, lineHeight: 1.5, marginTop: 6, color: PF.ink + 'aa' }}>{d}</div>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={250} style={{ marginTop: 28 }}>
+          <CTAButtons size="lg" label="QUIERO UNA TEMPORADA" waContext="quiero contratar una temporada de mi podcast." />
+        </Reveal>
+      </section>
+
+      {/* Piloto + calendario */}
+      <section id="reservar" style={{ padding: '60px 32px', background: PF.yellow, borderTop: `2px solid ${PF.ink}`, borderBottom: `2px solid ${PF.ink}` }}>
+        <div className="pf-two" style={{ display: 'grid', gridTemplateColumns: '1fr minmax(0, 560px)', gap: 40, alignItems: 'start' }}>
+          <Reveal>
+            <Kicker>▸ ¿QUIERES PROBAR PRIMERO?</Kicker>
+            <H2>Graba un <Serif>capítulo piloto.</Serif></H2>
+            <div style={{ fontWeight: 900, fontSize: 44, letterSpacing: '-0.03em', marginTop: 22 }}>
+              $300.000 <span style={{ fontSize: 16, fontWeight: 600 }}>+ IVA</span>
+            </div>
+            <div style={{ fontFamily: PF.mono, fontSize: 12, marginTop: 4 }}>TOTAL $357.000 · SET BASE · SE PAGA AL RESERVAR</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '22px 0 0', fontSize: 16, lineHeight: 1.6 }}>
+              {[
+                'Elige día y hora en el calendario y paga con MercadoPago.',
+                'Te llega la confirmación con la dirección y un link para cambiar la fecha.',
+                'Si contratas una temporada dentro de 30 días, el piloto pasa a ser tu capítulo 1 y se descuenta del total.',
+              ].map((t, i) => (
+                <li key={i} style={{ display: 'flex', gap: 12, marginBottom: 10 }}>
+                  <span style={{ fontFamily: PF.mono, fontWeight: 700 }}>0{i + 1}</span><span>{t}</span>
+                </li>
+              ))}
+            </ul>
+            <p style={{ fontFamily: PF.mono, fontSize: 12, lineHeight: 1.6, marginTop: 16 }}>
+              Lunes a viernes. Cambio de fecha sin costo hasta 48 h antes.
+            </p>
+          </Reveal>
+          <Reveal delay={150} className="pf-calendar-wrap">
+            <BookingCalendar />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Edición y adicionales */}
+      <section id="edicion" style={{ padding: '70px 32px 60px' }}>
+        <Reveal style={{ marginBottom: 26 }}>
+          <Kicker>▸ EDICIÓN Y ADICIONALES</Kicker>
+          <H2>Qué incluye <Serif color={PF.red}>cada capítulo.</Serif></H2>
+        </Reveal>
+        <div className="pf-two" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+          {[
+            ['EDICIÓN', [
+              ['Simple', 'Color, sonido, logo y música al inicio y al cierre, nombres en pantalla, hasta 3 cortes y 1 ronda de cambios.', 'Incluida'],
+              ['Con cortes', 'Hasta 10 cortes que pides después de grabar, indicando el minuto de cada uno.', '+$50.000'],
+              ['Pro', 'Cortes libres, reordenar partes, tráiler o teaser.', '+$150.000'],
+              ['Ronda de cambios extra', 'Cada ronda adicional a la incluida.', '+$50.000'],
+            ]],
+            ['ADICIONALES', [
+              ['3 reels', 'Verticales, con subtítulos, listos para Instagram, TikTok y Shorts.', '$120.000'],
+              ['Archivos por cámara', 'Cada cámara por separado y sincronizada, más las pistas de audio. Para editar tus propios cortes.', '$50.000'],
+              ['Tiempo extra', 'Bloques de 30 minutos, solo si no hay otra reserva después.', '$100.000'],
+            ]],
+          ].map(([title, rows], k) => (
+            <Reveal key={title} delay={120 + k * 120} style={{ border: `1.5px solid ${PF.ink}`, background: '#fff' }}>
+              <div style={{ background: k ? PF.blue : PF.ink, color: PF.bg, padding: '12px 18px', fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.14em', fontWeight: 700 }}>
+                {title} · POR CAPÍTULO, + IVA
+              </div>
+              {rows.map(([n, d, v]) => (
+                <div key={n} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, padding: '14px 18px', borderTop: `1px solid ${PF.ink}18` }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>{n}</div>
+                    <div style={{ fontSize: 13.5, lineHeight: 1.45, color: PF.ink + 'aa', marginTop: 3 }}>{d}</div>
+                  </div>
+                  <div style={{ fontWeight: 900, fontSize: 17, whiteSpace: 'nowrap' }}>{v}</div>
+                </div>
+              ))}
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={300} style={{ marginTop: 18, background: PF.yellow, padding: '16px 20px', fontSize: 15, lineHeight: 1.5, border: `1.5px solid ${PF.ink}` }}>
+          <b>La regla:</b> si pides cambiar el contenido o el orden del capítulo, ya no es edición simple.
+          Te decimos qué nivel corresponde y su valor <b>antes</b> de editar, nunca después.
+        </Reveal>
+      </section>
+
+      {/* Condiciones */}
+      <section id="condiciones" style={{ padding: '60px 32px', background: PF.ink, color: PF.bg }}>
+        <Reveal style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 20, flexWrap: 'wrap', marginBottom: 28 }}>
+          <div>
+            <Kicker color={PF.yellow}>▸ CONDICIONES</Kicker>
+            <H2>Las reglas, <Serif color={PF.yellow}>claras desde el inicio.</Serif></H2>
+          </div>
+          <a href="condiciones.pdf" target="_blank" rel="noopener" style={{
+            background: PF.bg, color: PF.ink, padding: '14px 22px', borderRadius: 999, textDecoration: 'none',
+            fontWeight: 700, fontSize: 13, letterSpacing: '0.08em',
+          }}>DESCARGAR TARIFAS Y CONDICIONES (PDF)</a>
+        </Reveal>
+        <div className="pf-cond" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
+          {[
+            ['Cambios de fecha', 'Sin costo con más de 48 horas de aviso. Con menos de 48 horas, o si no llegan, el capítulo se da por grabado.'],
+            ['Puntualidad', 'La hora corre desde la hora reservada, aunque lleguen tarde. ¿Necesitan más? Bloques de 30 minutos.'],
+            ['Plazo de la temporada', '6 capítulos en 3 meses, 8 en 4, 10 en 5 y 12 en 6. Los capítulos no grabados en el plazo se pierden.'],
+            ['Entrega', '5 días hábiles después de grabar. Tienes 5 días hábiles para pedir tu ronda de cambios.'],
+            ['Material', 'Lo guardamos 1 semana después de la entrega. Para conservarlo completo, pide los archivos por cámara.'],
+            ['Facturación', 'Factura electrónica con cada pago. El contenido es 100% tuyo.'],
+          ].map(([t, d], i) => (
+            <Reveal key={t} delay={100 + i * 70} style={{ borderTop: `1.5px solid ${PF.bg}55`, paddingTop: 14 }}>
+              <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.14em', color: PF.yellow, fontWeight: 700 }}>{t.toUpperCase()}</div>
+              <div style={{ fontSize: 15, lineHeight: 1.55, marginTop: 8, color: PF.bg + 'dd' }}>{d}</div>
             </Reveal>
           ))}
         </div>
@@ -378,19 +595,6 @@ function PodFactoryLanding() {
         </div>
       </section>
 
-      {/* Qué incluye la edición — franja oscura compacta */}
-      <section style={{ padding: '40px 32px', background: PF.ink, color: PF.bg }}>
-        <Reveal>
-          <div style={{ fontFamily: PF.mono, fontSize: 10, letterSpacing: '0.18em', color: PF.yellow, marginBottom: 10, fontWeight: 700 }}>
-            ✂️ LA EDICIÓN INCLUYE
-          </div>
-          <div style={{ fontSize: 14, lineHeight: 1.55, color: PF.bg + 'cc', maxWidth: 760 }}>
-            Logo al inicio y final, música de intro/outro, sobreimpresos con nombre y cargo,
-            corrección de color y sonido. Entrega de archivo de video + audio listo para publicar.
-          </div>
-        </Reveal>
-      </section>
-
       {/* Technical specs — el equipo que llevamos */}
       <section id="equipo" style={{ padding: '60px 32px', background: PF.yellow }}>
         <Reveal style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 24 }}>
@@ -407,7 +611,7 @@ function PodFactoryLanding() {
             </h2>
           </div>
           <div style={{ fontFamily: PF.mono, fontSize: 11, color: PF.ink + 'aa', maxWidth: 280, lineHeight: 1.5 }}>
-            Todo el gear viaja con nosotros. Sin sorpresas, sin atajos.
+            El mismo equipo en el estudio y en locación: todo viaja con nosotros.
           </div>
         </Reveal>
 
@@ -435,15 +639,8 @@ function PodFactoryLanding() {
       {/* FAQ */}
       <section id="faq" style={{ padding: '70px 32px', borderTop: `1.5px solid ${PF.ink}` }}>
         <Reveal style={{ marginBottom: 36 }}>
-          <div style={{ fontFamily: PF.mono, fontSize: 11, letterSpacing: '0.2em', marginBottom: 14 }}>
-            ▸ PREGUNTAS FRECUENTES
-          </div>
-          <h2 style={{
-            fontFamily: PF.display, fontWeight: 900, fontSize: 64,
-            letterSpacing: '-0.04em', margin: 0, lineHeight: 0.92, maxWidth: 820,
-          }}>
-            Preguntas <span style={{ fontFamily: PF.serif, fontStyle: 'italic', fontWeight: 400, color: PF.red }}>frecuentes</span>.
-          </h2>
+          <Kicker>▸ PREGUNTAS FRECUENTES</Kicker>
+          <H2 style={{ fontSize: 64, maxWidth: 820 }}>Preguntas <Serif color={PF.red}>frecuentes</Serif>.</H2>
         </Reveal>
 
         <style>{`
@@ -478,40 +675,40 @@ function PodFactoryLanding() {
         <Reveal delay={150} className="pf-faq" style={{ maxWidth: 920 }}>
           {[
             {
-              q: '¿Dónde graban?',
-              a: <>Donde estés: tu oficina, una locación, un evento. Llevamos el <b>estudio móvil completo</b> —cámaras, audio, luces— en Santiago y regiones. Tú pones el lugar y la conversación; nosotros el resto.</>,
+              q: '¿Son un estudio o una productora?',
+              a: <>Somos una <b>productora de podcasts</b>. Te ayudamos a definir el formato, grabamos, editamos y entregamos cada capítulo listo para publicar. Tenemos estudio propio en Vitacura, pero también grabamos <b>donde estés</b>: tu oficina, un evento, una casa o cualquier lugar, en Santiago y regiones.</>,
             },
             {
-              q: '¿Hasta cuántas personas pueden grabar al mismo tiempo?',
-              a: <>El setup acomoda <b>hasta 4 personas</b> con calidad broadcast, cada una con su cámara y micrófono dedicados.</>,
+              q: '¿Puedo grabar un solo capítulo?',
+              a: <>Trabajamos por temporadas desde 6 capítulos. Si quieres probar antes, reserva un <b>capítulo piloto</b> ($300.000 + IVA): si contratas una temporada dentro de 30 días, el piloto pasa a ser tu capítulo 1 y se descuenta del total.</>,
             },
             {
-              q: '¿Qué incluye la Edición?',
-              a: <>Logo al inicio y final, música de intro/outro, sobreimpresos con nombre y cargo, corrección de color y master de sonido. Entregamos el archivo de video + audio listo para publicar.</>,
+              q: '¿Qué pasa si nos pasamos de la hora?',
+              a: <>Cada capítulo es un bloque de 1 hora. Si necesitan más tiempo, se contrata en <b>bloques de 30 minutos ($100.000 + IVA)</b>, solo si no hay otra reserva después. Te avisamos a los 50 minutos de grabación.</>,
             },
             {
-              q: '¿Qué suma el Teaser?',
-              a: <>El Teaser agrega un resumen de los mejores momentos al inicio del episodio, un reel vertical para redes sociales y la <b>distribución</b> a Spotify, Apple Podcasts, YouTube y Amazon Music desde nuestras cuentas hacia tu canal.</>,
+              q: '¿Qué incluye la edición simple?',
+              a: <>Color, sonido, logo y música al inicio y al cierre, nombres en pantalla, <b>hasta 3 cortes</b> y 1 ronda de cambios. Si necesitas más cortes o reordenar el capítulo, tienes la edición con cortes (+$50.000) o la Pro (+$150.000). Siempre te lo decimos antes de editar.</>,
             },
             {
-              q: '¿Hacen streaming en vivo?',
-              a: <>Sí. Transmitimos multicámara en vivo a YouTube, LinkedIn, Zoom o la plataforma que prefieras. Necesitamos los accesos y datos RTMP el día de la sesión.</>,
+              q: '¿Y si necesito cambiar la fecha?',
+              a: <>Sin costo con más de <b>48 horas</b> de aviso, desde el link que te llega en el correo de confirmación. Con menos de 48 horas, o si no llegan, el capítulo se da por grabado.</>,
             },
             {
-              q: '¿Cómo agendo una grabación?',
-              a: <>Escríbenos por <b>WhatsApp</b>: nos cuentas la idea, coordinamos fecha, lugar y formato, y te enviamos una propuesta a la medida. Sin formularios ni esperas.</>,
+              q: '¿Hasta cuántas personas pueden grabar?',
+              a: <>Hasta <b>4 personas</b> en el set, cada una con su micrófono.</>,
             },
             {
               q: '¿Cuándo recibo el material?',
-              a: <>Entregamos el master en <b>24 horas</b> a través de un link de descarga (formato .mp4 Full HD + audio WAV). Para el Teaser, los entregables completos llegan en hasta 5 días hábiles.</>,
+              a: <>En <b>5 días hábiles</b> después de la grabación, en archivo MP4. Guardamos el material 1 semana después de la entrega; si lo quieres completo, pide los archivos por cámara.</>,
             },
             {
-              q: '¿Necesito experiencia previa?',
-              a: <>No. Te acompaña un productor dedicado que opera el switcher, dirige la conversación si hace falta y resuelve la parte técnica para que tú te concentres en hablar.</>,
+              q: '¿Hacen streaming en vivo?',
+              a: <>Sí, se cotiza aparte. Transmitimos multicámara en vivo a YouTube, LinkedIn, Zoom o la plataforma que prefieras.</>,
             },
             {
               q: '¿Quién es dueño del contenido?',
-              a: <>El contenido es <b>100% tuyo</b>. Eres responsable de los derechos de música, imágenes y marcas que aparezcan. Podemos usar fragmentos en nuestro portfolio solo si nos das autorización por escrito.</>,
+              a: <>El contenido es <b>100% tuyo</b>. Eres responsable de los derechos de música, imágenes y marcas que aparezcan. Solo usamos extractos en nuestro portafolio si nos autorizas por escrito.</>,
             },
           ].map(({ q, a }, i) => (
             <Reveal as="details" key={i} delay={200 + i * 50}>
@@ -551,13 +748,13 @@ function PodFactoryLanding() {
               <span>UNA SECCIÓN DE DOPPEL ↗</span>
             </a>
             <p style={{ fontSize: 12, lineHeight: 1.5, maxWidth: 320, marginTop: 12, color: PF.bg + 'aa' }}>
-              La casa de podcasts y vodcasts de Doppel.
-              Multicámara Blackmagic 6K/4K, audio broadcast, masterización en Fairlight.
-              Grabamos donde estés.
+              La productora de podcasts y vodcasts de Doppel.
+              Estudio propio en Vitacura (Eduardo Marquina 3937) o donde estés.
+              Multicámara, audio broadcast y edición en DaVinci Resolve.
             </p>
           </div>
           {[
-            ['PRODUCCIÓN', ['Podcast & vodcast', 'Estudio móvil · Santiago y regiones', 'Grabación · edición · distribución']],
+            ['PRODUCCIÓN', ['Productora de podcast & vodcast', 'Estudio en Vitacura + locación', 'Formato · grabación · edición']],
             ['CONTACTO',   ['hola@doppel.cl', '+56 9 2797 0014', 'WhatsApp']],
             ['DOPPEL',     ['Estudio creativo + Lab', 'Audiovisual · 3D · Apps', 'Volver a doppel.cl ↗']],
           ].map(([h, items]) => (
