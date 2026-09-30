@@ -25,4 +25,7 @@ sin video de Vimeo, sin fotos de mockup, sin música).
 Assets compartidos del demo que se reutilizan: `/latam360/assets/LatamSans-Bold.otf` y
 `/latam360/assets/latam-logo.svg`. CDNs: PlayCanvas (jsDelivr), Leaflet (unpkg), Google Fonts, teselas Esri.
 
-Pendiente: subir `cco.sog`, calibrar `VIEWS.santiago`, cargar `HOTSPOTS` y videos 360, locución (`TOURS`).
+`cco.sog` (CCO Santiago, 1,22 M gaussianas, SH 0, 13,6 MB): nivelado (suelo en y=0, Y arriba en el visor,
+escala aprox. en metros suponiendo cámara a ~1,5 m), `VIEWS.santiago` mirando al muro de pantallas.
+
+Pendiente: cargar `HOTSPOTS` y videos 360, locución (`TOURS`).

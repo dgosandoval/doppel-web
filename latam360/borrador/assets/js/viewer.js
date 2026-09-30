@@ -34,10 +34,13 @@ const CITIES = [
   { id: 'miami', name: 'Miami', place: 'Miami · Estados Unidos' }
 ];
 
-// Encuadre inicial por ciudad (coordenadas de mundo del splat). Valores genéricos:
-// re-medir con el splat real. Calibrar por URL: ?cam=x,y,z&focus=x,y,z
+// Encuadre inicial por ciudad (coordenadas de mundo del splat, metros aprox., Y arriba,
+// suelo en y=0). Calibrar por URL: ?cam=x,y,z&focus=x,y,z
+// santiago (cco.sog nivelado 30-sep-2026): origen en el suelo bajo el centro del recorrido
+// de la cámara; muro de pantallas en x≈8 (z≈-5..6.5, y≈1.4..2.9). Cámara a la altura de
+// los ojos mirando al muro.
 const VIEWS = {
-  santiago: { camera: [0, 1.6, 6], focus: [0, 1.4, 0] }
+  santiago: { camera: [-4, 1.6, 0.75], focus: [8, 2.0, 0.75] }
 };
 const DEFAULT_VIEW = { camera: [0, 1.6, 6], focus: [0, 1.4, 0] };
 
