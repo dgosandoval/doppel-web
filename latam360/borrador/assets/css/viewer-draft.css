@@ -1,8 +1,4 @@
 /* Ajustes del BORRADOR sobre viewer.css (estilos del demo) */
-.draft-note {
-  margin-top: 12px; padding: 10px 12px; border-radius: 10px;
-  background: rgba(255, 79, 109, 0.1); color: #7a1330; font-size: 12px; line-height: 1.45;
-}
 .draft-flag {
   position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 70;
   font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
@@ -17,5 +13,42 @@
   font: 700 9.5px 'Inter', sans-serif; letter-spacing: 0.1em;
   padding: 2px 7px; border-radius: 999px; background: var(--coral); color: #fff;
 }
-.callout__note { font-size: 11.5px !important; opacity: 0.6; }
-.welcome[hidden] { display: none; }
+.welcome[hidden], .info[hidden] { display: none; }
+
+/* ---- Estado sin splat ("Splat en producción" / "Próximamente") ---- */
+body.no-splat .info { display: none; }
+.splat-state {
+  position: fixed; inset: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: center; padding: 90px 20px 60px;
+  background: radial-gradient(120% 120% at 50% 0%, var(--indigo) 0%, var(--indigo-deep) 70%);
+}
+.splat-state[hidden] { display: none; }
+.splat-state__card {
+  width: 100%; max-width: 440px; text-align: center; padding: 34px 30px 30px; border-radius: 22px;
+  background: rgba(20, 8, 46, 0.55); border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 30px 80px rgba(8, 2, 30, 0.5); color: var(--white);
+}
+.splat-state__logo { height: 24px; filter: brightness(0) invert(1); margin-bottom: 20px; }
+.splat-state__place { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral-soft); font-weight: 700; }
+.splat-state__title { font-family: 'Latam Sans', 'Inter', sans-serif; font-size: 24px; line-height: 1.2; margin: 8px 0 14px; }
+.splat-state__badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.85);
+}
+.splat-state__badge--prod { background: rgba(255, 79, 109, 0.18); color: #ffb3c0; }
+.splat-state__badge--prod::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--coral);
+  animation: state-pulse 1.8s ease-in-out infinite;
+}
+@keyframes state-pulse { 50% { opacity: 0.3; } }
+.splat-state__text { font-size: 14px; line-height: 1.55; color: rgba(255, 255, 255, 0.75); margin: 16px 0 22px; }
+.splat-state__btn {
+  display: inline-block; padding: 11px 20px; border-radius: 999px; font-weight: 600; font-size: 14px;
+  color: #fff; text-decoration: none; background: var(--coral);
+}
+.splat-state__btn:hover { box-shadow: 0 12px 30px rgba(255, 79, 109, 0.35); }
+@media (max-width: 820px) {
+  .splat-state { align-items: flex-end; padding-bottom: 150px; }
+}

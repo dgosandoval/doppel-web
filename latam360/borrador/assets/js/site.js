@@ -1,25 +1,6 @@
-// LATAM 360 — BORRADOR. Landing: pager de puntos (igual que el demo) + mapa Leaflet.
+// LATAM 360 — BORRADOR. Página del mapa: 6 ciudades (Leaflet) con su tarjeta.
 (function () {
   'use strict';
-
-  // ---- Dots pager (copiado del demo): uno por sección ----
-  var slides = Array.from(document.querySelectorAll('.slide'));
-  var dots = document.getElementById('dots');
-  slides.forEach(function (s, i) {
-    var b = document.createElement('button');
-    b.setAttribute('aria-label', 'Sección ' + (i + 1));
-    b.addEventListener('click', function () { s.scrollIntoView({ behavior: 'smooth' }); });
-    dots.appendChild(b);
-  });
-  var obs = new IntersectionObserver(function (es) {
-    es.forEach(function (e) {
-      if (e.isIntersecting) {
-        var i = slides.indexOf(e.target);
-        dots.querySelectorAll('button').forEach(function (b, j) { b.classList.toggle('on', i === j); });
-      }
-    });
-  }, { threshold: 0.55 });
-  slides.forEach(function (s) { obs.observe(s); });
 
   // ---- Locaciones del proyecto: exactamente seis, una por país ----
   // Coordenadas = centro de cada ciudad (no la ubicación de una instalación).
@@ -32,8 +13,8 @@
       html:
         '<span class="badge badge--prod">En producción</span><span class="badge badge--first">Primer splat del recorrido</span>' +
         '<p>La sala desde donde se controlan <b>todos los vuelos de LATAM</b>.</p>' +
-        '<p>Es la primera parada del recorrido: el splat reconstruye el espacio, y las personas y las pantallas en vivo se verán en videos 360 que se abren desde los hotspots.</p>',
-      url: 'tour/'
+        '<p>Es la primera parada del recorrido. Su splat está <b>en producción</b>: el visor lo cargará en cuanto esté publicado.</p>',
+      url: 'tour/?ciudad=santiago'
     },
     { id: 'saopaulo', city: 'São Paulo', country: 'Brasil', lat: -23.5505, lon: -46.6333, soon: true },
     { id: 'lima', city: 'Lima', country: 'Perú', lat: -12.0464, lon: -77.0428, soon: true },
@@ -71,7 +52,7 @@
 
   var map = L.map('map', {
     zoomControl: true,
-    scrollWheelZoom: false, // no secuestrar el scroll de la página
+    scrollWheelZoom: true,
     worldCopyJump: false,
     minZoom: 2,
     maxZoom: 12
@@ -115,7 +96,7 @@
     } else {
       html +=
         '<h3 class="citycard__title">' + c.title + '</h3>' + c.html +
-        '<a class="cta" href="' + c.url + '">▶ Abrir el recorrido</a>';
+        '<a class="cta" href="' + c.url + '">▶ Abrir el visor</a>';
     }
     cardBody.innerHTML = html;
   }

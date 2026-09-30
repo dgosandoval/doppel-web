@@ -4,14 +4,14 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="robots" content="noindex, nofollow" />
-<title>LATAM 360° — CCO · Recorrido (BORRADOR)</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<title>LATAM 360° — Visor de splats (BORRADOR)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<!-- Estilos del visor del demo (copia de /latam360/style.css) + ajustes del borrador -->
+<!-- Estilos del visor (base: /latam360/style.css del demo, podado) + ajustes del borrador -->
 <link rel="stylesheet" href="../assets/css/viewer.css" />
 <link rel="stylesheet" href="../assets/css/viewer-draft.css" />
+<!-- PlayCanvas solo se descarga (import dinámico en viewer.js) si la ciudad tiene un splat publicado -->
 <script type="importmap">
 {
   "imports": {
@@ -27,48 +27,38 @@
   <!-- Navbar LATAM (mismo diseño que el demo) -->
   <header class="lnav">
     <div class="lnav__left">
-      <a class="lnav__back" href="../" title="Volver al proyecto">‹</a>
+      <a class="lnav__back" href="../" title="Volver al mapa">‹</a>
       <img class="lnav__logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
       <span class="lnav__tag">Recorrido · 360° Experience</span>
     </div>
     <div class="lnav__right">
+      <!-- Recorrido guiado: se muestra solo si la ciudad tiene locución/subtítulos (TOURS en viewer.js) -->
       <div id="controls">
         <button class="tour-btn" id="tour-btn" hidden>
           <span class="tour-btn__icon">▶</span>
           <span class="tour-btn__label">Iniciar recorrido</span>
-        </button>
-        <button class="mute-btn" id="mute-btn" title="Música del recorrido" aria-label="Música del recorrido">
-          <span class="mute-btn__icon" id="mute-icon">🔊</span>
         </button>
       </div>
       <div class="lnav__lang" title="ES activo en el borrador"><button class="on">ES</button><span>PT</span><span>EN</span></div>
     </div>
   </header>
 
-  <!-- Selector de paradas (una por país; solo el CCO está activo) -->
+  <!-- Selector de ciudades (una por país) -->
   <nav class="sidebar">
     <p class="sidebar__label">Paradas</p>
     <div id="scenes"></div>
   </nav>
 
-  <!-- Panel de información -->
-  <aside class="info">
-    <div class="info__place" id="info-place">Santiago · Chile</div>
-    <h2 class="info__name" id="info-name">CCO – Centro de Control de Operaciones</h2>
-    <p class="info__desc" id="info-desc">La sala desde donde se controlan todos los vuelos de LATAM. Primera parada del recorrido.</p>
-    <div class="draft-note" id="draft-note">
-      <b>Vista provisional.</b> El splat del CCO está en producción: mientras tanto se muestra un splat de demostración del demo actual. Los hotspots y videos son de ejemplo.
-    </div>
-    <div class="info__credit" id="info-credit">Splat provisional: CF-100 · Brandon Barker (superspl.at) · CC BY</div>
+  <!-- Panel de información de la ciudad -->
+  <aside class="info" id="info" hidden>
+    <div class="info__place" id="info-place"></div>
+    <h2 class="info__name" id="info-name"></h2>
+    <p class="info__desc" id="info-desc"></p>
   </aside>
 
-  <div class="hint" id="hint"></div>
   <div class="tour-caption" id="tour-caption"></div>
 
-  <!-- Música del recorrido (archivo del demo, por referencia) -->
-  <audio id="tour-audio" src="/latam360/assets/tour-music.mp3" loop preload="none"></audio>
-
-  <!-- Call-outs (hotspots) -->
+  <!-- Call-outs (hotspots): se generan desde HOTSPOTS en viewer.js (hoy vacío) -->
   <div id="callout-markers"></div>
   <div id="callout" class="callout" hidden>
     <button class="callout__close" id="callout-close" aria-label="Cerrar">×</button>
@@ -76,7 +66,19 @@
     <div class="callout__body" id="callout-body"></div>
   </div>
 
-  <!-- Loader -->
+  <!-- Estado sin splat ("Splat en producción" / "Próximamente") -->
+  <div id="splat-state" class="splat-state" hidden>
+    <div class="splat-state__card">
+      <img class="splat-state__logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
+      <div class="splat-state__place" id="state-place"></div>
+      <h2 class="splat-state__title" id="state-title"></h2>
+      <span class="splat-state__badge" id="state-badge"></span>
+      <p class="splat-state__text" id="state-text"></p>
+      <a class="splat-state__btn" href="../">‹ Volver al mapa</a>
+    </div>
+  </div>
+
+  <!-- Loader (mientras se verifica / descarga el splat) -->
   <div id="loader">
     <img class="loader-logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
     <div class="spinner"></div>
@@ -85,15 +87,14 @@
     <div id="loader-pct">0%</div>
   </div>
 
-  <!-- Bienvenida: cómo navegar -->
+  <!-- Bienvenida: cómo navegar (solo cuando el splat cargó) -->
   <div id="welcome" class="welcome" hidden>
     <div class="welcome__card">
       <img class="welcome__logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
-      <div class="welcome__eyebrow">360° Experience · CCO</div>
+      <div class="welcome__eyebrow" id="welcome-eyebrow">360° Experience</div>
       <h2 class="welcome__title">Cómo navegar</h2>
       <div class="welcome__rows" id="welcome-rows"></div>
       <button class="welcome__btn" id="welcome-start">Comenzar a explorar</button>
-      <div class="welcome__note" id="welcome-note"></div>
     </div>
   </div>
 

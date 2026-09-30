@@ -1,4 +1,4 @@
-/* LATAM 360 — BORRADOR. Base: estilos del landing del demo (doppel-web/latam360/index.html), + mapa Leaflet. */
+/* LATAM 360 — BORRADOR. Página del mapa (base: estilos del landing del demo /latam360/). */
   @font-face {
     font-family: 'Latam Sans';
     src: url('/latam360/assets/LatamSans-Bold.otf') format('opentype');
@@ -14,7 +14,6 @@
     --panel: rgba(255, 255, 255, 0.05);
   }
   * { box-sizing: border-box; margin: 0; }
-  html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
   body {
     color: var(--txt);
     font-family: 'Inter', system-ui, sans-serif;
@@ -28,7 +27,7 @@
     background-attachment: fixed;
   }
   a { color: inherit; text-decoration: none; }
-  h1, h2, h3 { font-family: 'Latam Sans', 'Inter', sans-serif; font-weight: 700; }
+  h2, h3 { font-family: 'Latam Sans', 'Inter', sans-serif; font-weight: 700; }
 
   /* ---- Nav fija: TODOS los accesos siempre visibles ---- */
   .top {
@@ -50,30 +49,7 @@
   .navlinks a:hover { border-color: rgba(255, 79, 109, 0.6); }
   .navlinks a.hot { background: var(--coral); border-color: transparent; }
 
-  /* ---- Dots pager ---- */
-  .dots {
-    position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 50;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .dots button {
-    width: 9px; height: 9px; border-radius: 50%; border: none; cursor: pointer;
-    background: rgba(255, 255, 255, 0.25); padding: 0; transition: all 0.2s ease;
-  }
-  .dots button.on { background: var(--coral); transform: scale(1.35); }
-
-  /* ---- Láminas ---- */
-  .slide {
-    min-height: 100svh;
-    scroll-snap-align: start;
-    display: flex; align-items: center;
-    padding: 84px 6vw 56px;
-    position: relative;
-  }
-  .grid {
-    display: grid; grid-template-columns: 1.05fr 1fr; gap: 5vw; align-items: center;
-    width: 100%; max-width: 1180px; margin: 0 auto;
-  }
-  .grid.rev > .art { order: -1; }
+  /* ---- Textos ---- */
   .eyebrow {
     display: flex; align-items: center; gap: 12px;
     font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--coral-soft);
@@ -82,18 +58,6 @@
   .eyebrow::before { content: ''; width: 34px; height: 2px; background: var(--coral); }
   h2 { font-size: clamp(30px, 4.4vw, 50px); line-height: 1.06; }
   .lead { margin-top: 15px; font-size: clamp(14.5px, 1.6vw, 17px); color: var(--dim); max-width: 540px; }
-  .art img {
-    width: 100%; height: auto; display: block; border-radius: 20px;
-    border: 1px solid var(--line);
-    box-shadow: 0 30px 80px rgba(5, 2, 15, 0.65), 0 0 90px rgba(255, 79, 109, 0.07);
-  }
-
-  .items { margin-top: 30px; }
-  .items .row { display: flex; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); align-items: baseline; }
-  .items .row .num { font-family: 'Latam Sans', sans-serif; color: var(--coral); font-size: 12px; min-width: 22px; }
-  .items .row h3 { font-size: 15.5px; min-width: 175px; }
-  .items .row p { color: var(--dim); font-size: 13.5px; }
-
   .cta {
     display: inline-flex; align-items: center; gap: 8px;
     margin-top: 26px; margin-right: 10px; padding: 12px 21px; border-radius: 999px;
@@ -101,64 +65,16 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
   .cta:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(255, 79, 109, 0.35); }
-  .cta.ghost { background: rgba(20, 12, 40, 0.5); border: 1px solid rgba(255, 255, 255, 0.22); box-shadow: none; }
-
-  /* Hero */
-  .hero h1 { font-size: clamp(44px, 7vw, 82px); line-height: 1.0; }
-  .stats { display: flex; gap: 36px; margin-top: 28px; }
-  .stat .n { font-family: 'Latam Sans', sans-serif; font-size: 34px; color: var(--coral); }
-  .stat .l { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; }
-  .launch { display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; }
-  .launch a {
-    flex: 1 1 150px; padding: 14px 16px; border-radius: 14px;
-    background: var(--panel); border: 1px solid var(--line);
-    transition: transform 0.16s ease, border-color 0.16s ease;
-  }
-  .launch a:hover { transform: translateY(-3px); border-color: rgba(255, 79, 109, 0.6); }
-  .launch .k { font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral-soft); }
-  .launch h3 { font-size: 16.5px; margin-top: 4px; }
-  .launch p { font-size: 11.5px; color: var(--dim); margin-top: 3px; }
-  .launch a.primary { background: linear-gradient(160deg, rgba(255, 79, 109, 0.18), rgba(42, 0, 136, 0.22)), var(--panel); border-color: rgba(255, 79, 109, 0.55); }
-
-  /* La red */
   .paises { margin-top: 24px; }
   .paises .p { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; }
   .paises .p b { font-family: 'Latam Sans', sans-serif; }
   .paises .p span { color: var(--dim); font-size: 12.5px; }
   .paises .p em { color: var(--coral-soft); font-style: normal; font-size: 11.5px; }
-  .mapbox svg { width: 100%; max-height: 74svh; height: auto; display: block; filter: drop-shadow(0 20px 50px rgba(5, 2, 15, 0.6)); }
-  .mapbox .countries path { fill: #1b1430; stroke: rgba(255, 255, 255, 0.13); stroke-width: 0.7; }
-  .nodeglow { fill: var(--coral); }
-  .nodelabel { fill: #fff; font: 600 17px 'Inter', sans-serif; paint-order: stroke; stroke: rgba(10, 6, 19, 0.7); stroke-width: 4px; }
-
-  /* Entregables */
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 32px; width: 100%; max-width: 1180px; }
-  .cards .c { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 17px; }
-  .cards .c h3 { font-size: 14px; color: var(--coral-soft); margin-bottom: 6px; }
-  .cards .c p { font-size: 12.5px; color: var(--dim); }
-  .fine { margin-top: 20px; padding: 15px 18px; border: 1px solid var(--line); border-radius: 13px; background: rgba(42, 0, 136, 0.14); font-size: 12.5px; color: var(--dim); max-width: 1180px; }
-  .fine b { color: var(--txt); }
-  .center { max-width: 1180px; margin: 0 auto; width: 100%; }
-
-  /* Cierre */
-  .cierre { text-align: center; flex-direction: column; justify-content: center; }
-  .cierre .contact { margin-top: 24px; color: var(--dim); font-size: 15px; }
-  .cierre .contact b { color: var(--txt); }
-  .cierre .foot { margin-top: 52px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.45; }
-
   @media (max-width: 860px) {
-    .grid { grid-template-columns: 1fr; gap: 26px; }
-    .grid.rev > .art { order: 0; }
-    .slide { padding: 92px 6vw 60px; align-items: flex-start; }
-    .items .row { flex-wrap: wrap; }
-    .cards { grid-template-columns: 1fr 1fr; }
-    .dots { display: none; }
-    .top__brand .t { display: none; }
+    .top__brand .t, .top__brand .sep { display: none; }
   }
 
 /* ===================== AGREGADO EN EL BORRADOR ===================== */
-html { scroll-snap-type: y proximity; }
-
 /* Marca de borrador */
 .draft-flag {
   position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 60;
@@ -168,12 +84,8 @@ html { scroll-snap-type: y proximity; }
   pointer-events: none;
 }
 
-/* Cierre: logo Doppel */
-.cierre .foot-pre { margin-bottom: 8px; }
-.cierre .foot-logo { height: 18px; width: auto; filter: brightness(0) invert(1); opacity: 0.8; }
-
 /* ---- Mapa ---- */
-.slide--map { align-items: stretch; }
+.mappage { min-height: 100svh; display: flex; align-items: stretch; padding: 76px 4vw 52px; }
 .mapwrap {
   display: grid; grid-template-columns: 340px 1fr; gap: 3vw;
   width: 100%; max-width: 1280px; margin: 0 auto; align-items: stretch;
@@ -184,7 +96,7 @@ html { scroll-snap-type: y proximity; }
 .paises .p.on b { color: var(--coral-soft); }
 .paises .p em.soon { color: var(--dim); }
 .mapstage {
-  position: relative; min-height: 560px; height: calc(100svh - 150px);
+  position: relative; min-height: 560px; height: calc(100svh - 128px);
   border-radius: 20px; overflow: hidden; border: 1px solid var(--line);
   box-shadow: 0 30px 80px rgba(5, 2, 15, 0.65), 0 0 90px rgba(255, 79, 109, 0.07);
 }

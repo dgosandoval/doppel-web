@@ -1,4 +1,4 @@
-/* LATAM 360 — identidad de marca LATAM (demo Doppel) */
+/* LATAM 360 — identidad de marca LATAM. Base: /latam360/style.css del demo, podado a lo que usa el visor del borrador. */
 @font-face {
   font-family: 'Latam Sans';
   src: url('/latam360/assets/LatamSans-Bold.otf') format('opentype');
@@ -41,65 +41,7 @@ body {
   touch-action: none;
 }
 
-/* ---- Top bar ---------------------------------------------------------- */
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 26px;
-  background: linear-gradient(to bottom, rgba(20, 8, 46, 0.78), rgba(20, 8, 46, 0));
-  pointer-events: none;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.brand__logo {
-  height: 26px;
-  width: auto;
-  /* el SVG es indigo; lo pasamos a blanco para fondo oscuro */
-  filter: brightness(0) invert(1);
-}
-.brand__divider {
-  width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.35);
-}
-.brand__title {
-  font-family: 'Latam Sans', sans-serif;
-  font-weight: 700;
-  font-size: 19px;
-  letter-spacing: 0.04em;
-}
-.brand__title sup {
-  color: var(--coral-soft);
-  font-size: 12px;
-}
-.topbar__right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.topbar__pre {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.6;
-}
-.topbar__doppel {
-  height: 18px;
-  width: auto;
-  filter: brightness(0) invert(1);
-  opacity: 0.92;
-}
-
-/* ---- Cluster de controles (recorrido + AR), agrupados ----------------- */
+/* ---- Cluster de controles (recorrido guiado) --------------------------- */
 #controls {
   /* Integrado en la navbar (.lnav__right): grupo estático de botones */
   display: flex;
@@ -135,43 +77,7 @@ body {
 }
 .tour-btn__icon {
   font-size: 11px;
-  color: var(--coral); /* acento coral en el ícono (identifica la acción principal) */
-}
-
-/* ---- Botón de vista AR (giroscopio, solo mobile) ---------------------- */
-.gyro-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 13px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 999px;
-  background: rgba(20, 8, 46, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #fff;
-  font-family: 'Latam Sans', sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  transition: opacity 0.35s ease, background 0.2s ease;
-}
-.gyro-btn[hidden] {
-  display: none;
-}
-/* Durante el recorrido el botón AR se oculta (modo inmersivo, como el menú/hint). */
-body.touring .gyro-btn {
-  opacity: 0;
-  pointer-events: none;
-}
-.gyro-btn.active {
-  background: var(--coral);
-  border-color: transparent;
-}
-.gyro-btn__icon {
-  font-size: 15px;
-  line-height: 1;
-}
+  color: var(--coral);}
 
 /* ---- Panel de escenas (izquierda) ------------------------------------ */
 .sidebar {
@@ -185,18 +91,6 @@ body.touring .gyro-btn {
   gap: 10px;
   width: 230px;
   transition: opacity 0.45s ease, transform 0.45s ease;
-}
-/* Modo inmersivo: con el mouse quieto, el menú lateral se desvanece (solo desktop;
-   en táctil se mantiene visible). Se reactiva al mover el mouse. */
-@media (hover: hover) and (pointer: fine) {
-  body.is-idle .sidebar {
-    opacity: 0;
-    transform: translate(-16px, -50%);
-    pointer-events: none;
-  }
-  body.is-idle {
-    cursor: none;
-  }
 }
 /* Durante el recorrido el menú de escenas se oculta en TODOS los dispositivos
    (en móvil no hay "mouse quieto", así que se ata al estado del tour). */
@@ -291,39 +185,6 @@ body.touring .sidebar {
   line-height: 1.5;
   opacity: 0.85;
 }
-.info__credit {
-  margin-top: 12px;
-  font-size: 11px;
-  opacity: 0.5;
-}
-
-/* ---- Hint de controles (abajo centro) -------------------------------- */
-.hint {
-  position: fixed;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  font-size: 12.5px;
-  letter-spacing: 0.04em;
-  padding: 9px 18px;
-  border-radius: 999px;
-  background: rgba(20, 8, 46, 0.55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: opacity 0.35s ease;
-}
-/* Durante el recorrido el hint de controles se oculta (no aplica en modo libre). */
-body.touring .hint {
-  opacity: 0;
-  pointer-events: none;
-}
-/* El hint se auto-oculta a los pocos segundos para no tapar la vista. */
-.hint--hidden {
-  opacity: 0;
-  pointer-events: none;
-}
 
 /* ---- Tarjeta de mensajes del recorrido -------------------------------- */
 .tour-caption {
@@ -358,20 +219,6 @@ body.touring .hint {
 }
 .tour-caption b {
   color: var(--coral-soft);
-}
-
-/* ---- Transición entre escenas (fade a indigo) ------------------------- */
-#scene-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
-  pointer-events: none;
-  opacity: 0;
-  background: radial-gradient(120% 120% at 50% 0%, var(--indigo) 0%, var(--indigo-deep) 75%);
-  transition: opacity 0.45s ease;
-}
-#scene-transition.show {
-  opacity: 1;
 }
 
 /* ---- Loader ----------------------------------------------------------- */
@@ -571,12 +418,6 @@ body.touring .hint {
   transform: translateY(-1px);
   box-shadow: 0 12px 30px rgba(255, 79, 109, 0.4);
 }
-.welcome__note {
-  margin-top: 12px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
-  line-height: 1.5;
-}
 .loader-logo {
   height: 30px;
   filter: brightness(0) invert(1);
@@ -590,26 +431,6 @@ body.touring .hint {
 
 /* ---- Responsive ------------------------------------------------------- */
 @media (max-width: 820px) {
-  /* Top bar compacto: solo logos, sin texto que desborde */
-  .topbar {
-    padding: 10px 14px;
-  }
-  .brand {
-    gap: 8px;
-  }
-  .brand__logo {
-    height: 19px;
-  }
-  .brand__divider,
-  .brand__title {
-    display: none;
-  }
-  .topbar__pre {
-    display: none;
-  }
-  .topbar__doppel {
-    height: 15px;
-  }
 
   /* Selector de escenas: fila horizontal deslizable, abajo */
   .sidebar {
@@ -650,19 +471,8 @@ body.touring .hint {
   .info {
     display: none;
   }
-  /* En mobile el hint SÍ se muestra (indica controles de dedo), reubicado arriba. */
-  .hint {
-    bottom: auto;
-    top: 92px;
-    font-size: 11.5px;
-    padding: 7px 14px;
-    max-width: calc(100vw - 36px);
-    text-align: center;
-  }
-  /* Cluster de controles: arriba al centro, bajo el header (centrado = nunca se
-     sale de pantalla, ni en horizontal con el notch lateral). */
-  .tour-btn,
-  .gyro-btn {
+  /* Botón del recorrido compacto */
+  .tour-btn {
     padding: 7px 11px;
     font-size: 12px;
   }
@@ -677,19 +487,6 @@ body.touring .hint {
 
 /* ---- Horizontal en móvil: poca altura → compactar el chrome --------- */
 @media (orientation: landscape) and (max-height: 500px) {
-  .topbar {
-    padding: 6px 14px;
-  }
-  .brand__logo {
-    height: 16px;
-  }
-  .topbar__doppel {
-    height: 13px;
-  }
-  /* En horizontal el hint roba altura; se omite (los controles ya se sienten). */
-  .hint {
-    display: none;
-  }
   .tour-caption {
     top: 42px;
     font-size: 13px;
@@ -716,8 +513,7 @@ body.touring .hint {
   position: fixed;
   inset: 0;
   z-index: 8;
-  pointer-events: none; /* solo los marcadores capturan clics; el resto pasa al canvas */
-}
+  pointer-events: none;}
 .hotspot {
   position: absolute;
   left: 0;
@@ -798,12 +594,6 @@ body.touring .hint {
   overflow: hidden;
 }
 .callout__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.callout__img {
-  width: 100%;
-  display: block;
-  height: 170px;
-  object-fit: cover;
-}
 .callout__body { padding: 15px 18px 18px; }
 .callout__title {
   font-family: 'Latam Sans', sans-serif;
@@ -822,22 +612,6 @@ body.touring .hint {
 }
 .callout__body p { font-size: 13.5px; line-height: 1.5; margin: 0 0 8px; }
 
-#callout-editor {
-  position: fixed;
-  left: 50%;
-  bottom: 12px;
-  transform: translateX(-50%);
-  z-index: 41;
-  background: rgba(20, 8, 46, 0.88);
-  color: #fff;
-  font: 12px ui-monospace, Menlo, monospace;
-  padding: 8px 14px;
-  border-radius: 8px;
-  max-width: 92vw;
-  text-align: center;
-}
-#callout-editor[hidden] { display: none; }
-
 /* Móvil: la tarjeta como hoja inferior a ancho completo. */
 @media (max-width: 820px) {
   .callout {
@@ -850,55 +624,6 @@ body.touring .hint {
     border-radius: 18px 18px 0 0;
   }
   .callout__video { border-radius: 0; }
-}
-
-/* ---- Botón mute del sonido ambiente (en el cluster de controles) ------ */
-.mute-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 50%;
-  background: rgba(20, 8, 46, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-.mute-btn:hover { background: rgba(20, 8, 46, 0.78); }
-.mute-btn.muted { opacity: 0.55; }
-.mute-btn__icon { font-size: 15px; line-height: 1; }
-
-/* ---- Link de vuelta al landing del proyecto (topbar) ------------------ */
-.back-link {
-  pointer-events: auto;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
-  text-decoration: none;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  background: rgba(20, 8, 46, 0.5);
-  margin-right: 4px;
-}
-.back-link:hover { color: #fff; border-color: rgba(255, 255, 255, 0.4); }
-@media (max-width: 820px) {
-  .back-link { font-size: 11px; padding: 5px 10px; }
-}
-
-/* ---- Hotspot estilo avatar (producto: la persona en el splat) --------- */
-.hotspot__dot--avatar {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  font: 700 15px 'Latam Sans', 'Inter', sans-serif;
-  color: #fff;
-  background: linear-gradient(150deg, #ff4f6d, #2a0088);
 }
 
 /* ---- Navbar LATAM compartida (demo + producto): barra flotante ------- */
@@ -952,42 +677,10 @@ body.touring .hint {
 }
 .lnav__lang .on { background: var(--coral); color: #fff; padding: 4px 9px; border-radius: 6px; border: none; font: inherit; cursor: pointer; }
 .lnav__lang span { padding: 4px 5px; }
-.lnav__ico {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 14px;
-  color: #fff;
-}
-.lnav__avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(150deg, var(--coral), var(--indigo));
-  font: 700 12px 'Latam Sans', sans-serif;
-  color: #fff;
-  position: relative;
-}
-.lnav__avatar::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--coral);
-  border: 2px solid #140b28;
-}
 @media (max-width: 700px) {
-  .lnav__tag, .lnav__ico, .lnav__lang { display: none; }
+  .lnav__tag, .lnav__lang { display: none; }
 }
 @media (max-width: 480px) {
-  .tour-btn__label, .gyro-btn__label { display: none; }
+  .tour-btn__label { display: none; }
   .tour-btn__icon { font-size: 14px; }
 }

@@ -2,19 +2,27 @@
 
 Borrador del proyecto definitivo, servido en `https://doppel.cl/latam360/borrador/`
 detrás de la misma clave que `/latam360` (`functions/latam360/_middleware.js`).
-Páginas con `<meta name="robots" content="noindex, nofollow">`.
+Páginas con `<meta name="robots" content="noindex, nofollow">` y etiqueta "Borrador · no publicado".
 
-- `index.html` — landing (hero, Sobre el proyecto, La experiencia, Mapa Leaflet, cierre)
-- `tour/index.html` — visor PlayCanvas 2.19.6 (GSplat) con hotspots, parada CCO
-- `assets/css/site.css` — estilos del landing del demo + mapa/tarjetas
-- `assets/css/viewer.css` — copia de `latam360/style.css` (solo cambia la ruta de la fuente)
-- `assets/css/viewer-draft.css` — ajustes del borrador
-- `assets/js/site.js` — pager + mapa (6 locaciones)
-- `assets/js/viewer.js` — visor (basado en `scenes/cf100.mjs` + call-outs de `app.js`)
+Contiene SOLO el mapa y el visor de los splats nuevos (nada del demo: sin splat CF-100,
+sin video de Vimeo, sin fotos de mockup, sin música).
 
-Reutiliza los assets del demo en `/latam360/assets/` (fuente LatamSans, logos, imágenes
-`img/*.jpg`, splat provisional `splats/cf100-lite.sog`, `tour-music.mp3`). Video de hotspot:
-Vimeo del demo. CDNs: PlayCanvas (jsDelivr), Leaflet (unpkg), Google Fonts, teselas ArcGIS.
+- `index.html` + `assets/js/site.js` + `assets/css/site.css` — mapa Leaflet con las 6 ciudades
+  (Santiago, São Paulo, Lima, Bogotá, Quito, Miami) y su tarjeta. `?ciudad=santiago` abre la tarjeta.
+- `tour/index.html` + `assets/js/viewer.js` + `assets/css/viewer.css` (base: `latam360/style.css`
+  del demo, podado) + `assets/css/viewer-draft.css` — visor PlayCanvas 2.19.6 (GSplat).
+  `tour/?ciudad=<id>` elige la ciudad (por defecto Santiago).
 
-Pendiente: splat del CCO (`STOP.splatUrl` en `assets/js/viewer.js`), re-medir `pos` de
-hotspots y encuadre (`?cam=x,y,z&focus=x,y,z` para calibrar), videos 360 reales, locución del CCO.
+## Configuración (arriba de `assets/js/viewer.js`)
+- `SPLATS` — ruta del splat por ciudad. `santiago: '/latam360/assets/splats/cco.sog'`, resto vacío.
+  El visor hace un `HEAD` al archivo: si no existe (Cloudflare Pages responde 200 + HTML para
+  rutas inexistentes, por eso se descarta `text/html`) muestra "Splat en producción" y no descarga
+  PlayCanvas ni nada más. Ciudad sin ruta → "Próximamente".
+- `VIEWS` — encuadre inicial por ciudad (calibrar con `?cam=x,y,z&focus=x,y,z`).
+- `HOTSPOTS` — call-outs por ciudad (vacío). `TOURS` — locución/subtítulos por ciudad (vacío;
+  el botón "Iniciar recorrido" aparece solo si hay contenido).
+
+Assets compartidos del demo que se reutilizan: `/latam360/assets/LatamSans-Bold.otf` y
+`/latam360/assets/latam-logo.svg`. CDNs: PlayCanvas (jsDelivr), Leaflet (unpkg), Google Fonts, teselas Esri.
+
+Pendiente: subir `cco.sog`, calibrar `VIEWS.santiago`, cargar `HOTSPOTS` y videos 360, locución (`TOURS`).
