@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>LATAM 360 · Recorrido virtual — BORRADOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<!-- Leaflet (mapa interactivo, CDN) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="assets/css/site.css" />
+</head>
+<body>
+
+<div class="draft-flag" title="Borrador interno: no publicado">Borrador · no publicado</div>
+
+<header class="top">
+  <div class="top__brand">
+    <img src="/latam360/assets/latam-logo.svg" alt="LATAM" />
+    <span class="sep"></span>
+    <span class="t">RECORRIDO 360</span>
+  </div>
+  <nav class="navlinks">
+    <a class="hot" href="tour/">▶ Recorrido</a>
+    <a href="#mapa">◈ Mapa</a>
+    <a href="#proyecto">Sobre el proyecto</a>
+  </nav>
+</header>
+
+<nav class="dots" id="dots" aria-label="Secciones"></nav>
+
+<!-- 1 · HERO (base: demo /latam360/) -->
+<section class="slide" id="s1">
+  <div class="grid">
+    <div class="hero">
+      <div class="eyebrow">LATAM 360</div>
+      <h1>Bienvenido<br />a bordo.</h1>
+      <p class="lead">Un recorrido virtual en <b>Gaussian Splatting</b>, con locución y puntos interactivos que abren <b>videos 360</b>. Conocer LATAM por dentro, desde el navegador.</p>
+      <div class="stats">
+        <div class="stat"><div class="n">6</div><div class="l">Países</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Ciudades</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Locaciones</div></div>
+      </div>
+      <div class="launch">
+        <a class="primary" href="tour/"><div class="k">Primera parada</div><h3>▶ Recorrido</h3><p>CCO · Santiago (en producción).</p></a>
+        <a href="#mapa"><div class="k">La red</div><h3>◈ Mapa</h3><p>Seis locaciones, una por país.</p></a>
+        <a href="#proyecto"><div class="k">El proyecto</div><h3>Sobre LATAM 360</h3><p>Cómo funciona el recorrido.</p></a>
+      </div>
+    </div>
+    <div class="art"><img src="/latam360/assets/img/hero-laptop.jpg" alt="El recorrido en el navegador" /></div>
+  </div>
+</section>
+
+<!-- 2 · SOBRE EL PROYECTO (nuevo) -->
+<section class="slide" id="proyecto">
+  <div class="grid rev">
+    <div>
+      <div class="eyebrow">01 · Sobre el proyecto</div>
+      <h2>Un recorrido virtual por la red LATAM.</h2>
+      <p class="lead">LATAM 360 es un recorrido virtual en Gaussian Splatting: espacios reales reconstruidos en volumen, que se navegan libremente o con una visita guiada con locución. Dentro de cada espacio, puntos interactivos (hotspots) abren videos 360.</p>
+      <div class="items">
+        <div class="row"><span class="num">01</span><h3>El espacio</h3><p>El splat captura solo el espacio quieto: la sala, tal como es.</p></div>
+        <div class="row"><span class="num">02</span><h3>Las personas</h3><p>La gente y las pantallas en vivo aparecen en videos 360 independientes, que se abren desde los hotspots.</p></div>
+        <div class="row"><span class="num">03</span><h3>La locución</h3><p>Una voz guía el recorrido y da contexto a cada parada.</p></div>
+        <div class="row"><span class="num">04</span><h3>Primera parada</h3><p><b>CCO – Centro de Control de Operaciones</b>, en Santiago de Chile: la sala desde donde se controlan todos los vuelos de LATAM. Su splat está en producción.</p></div>
+      </div>
+      <a class="cta" href="tour/">▶ Abrir el recorrido</a>
+      <a class="cta ghost" href="#mapa">◈ Ver el mapa</a>
+    </div>
+    <div class="art"><img src="/latam360/assets/img/idea-splats.jpg" alt="La realidad reconstruida en splats" /></div>
+  </div>
+</section>
+
+<!-- 3 · LA EXPERIENCIA (base: demo, adaptado a video 360) -->
+<section class="slide" id="s3">
+  <div class="grid">
+    <div>
+      <div class="eyebrow">02 · La experiencia</div>
+      <h2>Espacios reales, con su gente en 360.</h2>
+      <p class="lead">Navegas el espacio en 3D y, al tocar un punto, se abre un video 360 con las personas y las pantallas de ese lugar.</p>
+      <div class="items">
+        <div class="row"><span class="num">01</span><h3>Recorrido guiado</h3><p>Locución, música y subtítulos sincronizados.</p></div>
+        <div class="row"><span class="num">02</span><h3>Exploración libre</h3><p>Te mueves a tu ritmo, en 6DoF.</p></div>
+        <div class="row"><span class="num">03</span><h3>Hotspots · video 360</h3><p>Cada punto abre un video 360 dentro del recorrido.</p></div>
+        <div class="row"><span class="num">04</span><h3>En el navegador</h3><p>Cualquier dispositivo, sin instalar nada.</p></div>
+      </div>
+      <a class="cta" href="tour/">▶ Pruébalo</a>
+    </div>
+    <div class="art"><img src="/latam360/assets/img/exp-mockup.jpg" alt="Hotspots dentro del splat" /></div>
+  </div>
+</section>
+
+<!-- 4 · MAPA (nuevo: Leaflet) -->
+<section class="slide slide--map" id="mapa">
+  <div class="mapwrap">
+    <div class="mapside">
+      <div class="eyebrow">03 · La red</div>
+      <h2>6 países, 6 locaciones.</h2>
+      <p class="lead">Toca un punto del mapa para ver cada locación del recorrido.</p>
+      <div class="paises" id="city-list"></div>
+    </div>
+    <div class="mapstage">
+      <div id="map" role="region" aria-label="Mapa de locaciones del proyecto"></div>
+      <aside class="citycard" id="citycard" hidden>
+        <button class="citycard__close" id="citycard-close" aria-label="Cerrar">×</button>
+        <div class="citycard__body" id="citycard-body"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · CIERRE -->
+<section class="slide cierre" id="s5">
+  <div class="eyebrow" style="justify-content:center">LATAM 360</div>
+  <h2>Elevando tu viaje en LATAM.</h2>
+  <div style="margin-top:32px">
+    <a class="cta" href="tour/">▶ Recorrido</a>
+    <a class="cta ghost" href="#mapa">◈ Mapa</a>
+  </div>
+  <div class="foot">
+    <div class="foot-pre">Una experiencia de</div>
+    <img class="foot-logo" src="/latam360/assets/doppel-logo.png" alt="Doppel" />
+  </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

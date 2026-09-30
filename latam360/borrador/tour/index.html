@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="robots" content="noindex, nofollow" />
+<title>LATAM 360° — CCO · Recorrido (BORRADOR)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<!-- Estilos del visor del demo (copia de /latam360/style.css) + ajustes del borrador -->
+<link rel="stylesheet" href="../assets/css/viewer.css" />
+<link rel="stylesheet" href="../assets/css/viewer-draft.css" />
+<script type="importmap">
+{
+  "imports": {
+    "playcanvas": "https://cdn.jsdelivr.net/npm/playcanvas@2.19.6/build/playcanvas.mjs",
+    "playcanvas/scripts/esm/camera-controls.mjs": "https://cdn.jsdelivr.net/npm/playcanvas@2.19.6/scripts/esm/camera-controls.mjs"
+  }
+}
+</script>
+</head>
+<body>
+  <canvas id="application-canvas"></canvas>
+
+  <!-- Navbar LATAM (mismo diseño que el demo) -->
+  <header class="lnav">
+    <div class="lnav__left">
+      <a class="lnav__back" href="../" title="Volver al proyecto">‹</a>
+      <img class="lnav__logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
+      <span class="lnav__tag">Recorrido · 360° Experience</span>
+    </div>
+    <div class="lnav__right">
+      <div id="controls">
+        <button class="tour-btn" id="tour-btn" hidden>
+          <span class="tour-btn__icon">▶</span>
+          <span class="tour-btn__label">Iniciar recorrido</span>
+        </button>
+        <button class="mute-btn" id="mute-btn" title="Música del recorrido" aria-label="Música del recorrido">
+          <span class="mute-btn__icon" id="mute-icon">🔊</span>
+        </button>
+      </div>
+      <div class="lnav__lang" title="ES activo en el borrador"><button class="on">ES</button><span>PT</span><span>EN</span></div>
+    </div>
+  </header>
+
+  <!-- Selector de paradas (una por país; solo el CCO está activo) -->
+  <nav class="sidebar">
+    <p class="sidebar__label">Paradas</p>
+    <div id="scenes"></div>
+  </nav>
+
+  <!-- Panel de información -->
+  <aside class="info">
+    <div class="info__place" id="info-place">Santiago · Chile</div>
+    <h2 class="info__name" id="info-name">CCO – Centro de Control de Operaciones</h2>
+    <p class="info__desc" id="info-desc">La sala desde donde se controlan todos los vuelos de LATAM. Primera parada del recorrido.</p>
+    <div class="draft-note" id="draft-note">
+      <b>Vista provisional.</b> El splat del CCO está en producción: mientras tanto se muestra un splat de demostración del demo actual. Los hotspots y videos son de ejemplo.
+    </div>
+    <div class="info__credit" id="info-credit">Splat provisional: CF-100 · Brandon Barker (superspl.at) · CC BY</div>
+  </aside>
+
+  <div class="hint" id="hint"></div>
+  <div class="tour-caption" id="tour-caption"></div>
+
+  <!-- Música del recorrido (archivo del demo, por referencia) -->
+  <audio id="tour-audio" src="/latam360/assets/tour-music.mp3" loop preload="none"></audio>
+
+  <!-- Call-outs (hotspots) -->
+  <div id="callout-markers"></div>
+  <div id="callout" class="callout" hidden>
+    <button class="callout__close" id="callout-close" aria-label="Cerrar">×</button>
+    <div class="callout__media" id="callout-media"></div>
+    <div class="callout__body" id="callout-body"></div>
+  </div>
+
+  <!-- Loader -->
+  <div id="loader">
+    <img class="loader-logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
+    <div class="spinner"></div>
+    <div id="loader-text">Iniciando experiencia inmersiva…</div>
+    <div class="loader-progress"><div class="loader-progress__fill" id="loader-bar"></div></div>
+    <div id="loader-pct">0%</div>
+  </div>
+
+  <!-- Bienvenida: cómo navegar -->
+  <div id="welcome" class="welcome" hidden>
+    <div class="welcome__card">
+      <img class="welcome__logo" src="/latam360/assets/latam-logo.svg" alt="LATAM" />
+      <div class="welcome__eyebrow">360° Experience · CCO</div>
+      <h2 class="welcome__title">Cómo navegar</h2>
+      <div class="welcome__rows" id="welcome-rows"></div>
+      <button class="welcome__btn" id="welcome-start">Comenzar a explorar</button>
+      <div class="welcome__note" id="welcome-note"></div>
+    </div>
+  </div>
+
+  <div class="draft-flag">Borrador · no publicado</div>
+
+  <script type="module" src="../assets/js/viewer.js"></script>
+</body>
+</html>

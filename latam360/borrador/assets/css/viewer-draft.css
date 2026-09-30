@@ -1,0 +1,21 @@
+/* Ajustes del BORRADOR sobre viewer.css (estilos del demo) */
+.draft-note {
+  margin-top: 12px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(255, 79, 109, 0.1); color: #7a1330; font-size: 12px; line-height: 1.45;
+}
+.draft-flag {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 70;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700;
+  padding: 6px 12px; border-radius: 999px; color: #fff; background: rgba(255, 79, 109, 0.85);
+  pointer-events: none;
+}
+.scene-card[disabled] { cursor: default; background: rgba(20, 8, 46, 0.62); color: rgba(255, 255, 255, 0.7); padding: 9px 16px; }
+.scene-card[disabled]:hover { transform: none; background: rgba(20, 8, 46, 0.62); border-color: rgba(255, 255, 255, 0.14); }
+.scene-card[disabled] .scene-card__name { font-size: 14px; }
+.callout__badge {
+  display: inline-block; vertical-align: 1px; margin-right: 4px;
+  font: 700 9.5px 'Inter', sans-serif; letter-spacing: 0.1em;
+  padding: 2px 7px; border-radius: 999px; background: var(--coral); color: #fff;
+}
+.callout__note { font-size: 11.5px !important; opacity: 0.6; }
+.welcome[hidden] { display: none; }

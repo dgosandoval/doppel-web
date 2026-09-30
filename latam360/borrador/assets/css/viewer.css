@@ -1,0 +1,993 @@
+/* LATAM 360 — identidad de marca LATAM (demo Doppel) */
+@font-face {
+  font-family: 'Latam Sans';
+  src: url('/latam360/assets/LatamSans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --indigo: #2a0088;
+  --indigo-deep: #1a0058;
+  --coral: #ff4f6d;
+  --coral-soft: #ff7a90;
+  --ink: #15082e;
+  --white: #ffffff;
+  --glass: rgba(255, 255, 255, 0.92);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--indigo-deep);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+#application-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  touch-action: none;
+}
+
+/* ---- Top bar ---------------------------------------------------------- */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 26px;
+  background: linear-gradient(to bottom, rgba(20, 8, 46, 0.78), rgba(20, 8, 46, 0));
+  pointer-events: none;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.brand__logo {
+  height: 26px;
+  width: auto;
+  /* el SVG es indigo; lo pasamos a blanco para fondo oscuro */
+  filter: brightness(0) invert(1);
+}
+.brand__divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.35);
+}
+.brand__title {
+  font-family: 'Latam Sans', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: 0.04em;
+}
+.brand__title sup {
+  color: var(--coral-soft);
+  font-size: 12px;
+}
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar__pre {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.topbar__doppel {
+  height: 18px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+/* ---- Cluster de controles (recorrido + AR), agrupados ----------------- */
+#controls {
+  /* Integrado en la navbar (.lnav__right): grupo estático de botones */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tour-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(20, 8, 46, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-family: 'Latam Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+.tour-btn[hidden] {
+  display: none;
+}
+.tour-btn:hover {
+  background: rgba(20, 8, 46, 0.78);
+}
+.tour-btn.active {
+  background: rgba(20, 8, 46, 0.7);
+}
+.tour-btn__icon {
+  font-size: 11px;
+  color: var(--coral); /* acento coral en el ícono (identifica la acción principal) */
+}
+
+/* ---- Botón de vista AR (giroscopio, solo mobile) ---------------------- */
+.gyro-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(20, 8, 46, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-family: 'Latam Sans', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.35s ease, background 0.2s ease;
+}
+.gyro-btn[hidden] {
+  display: none;
+}
+/* Durante el recorrido el botón AR se oculta (modo inmersivo, como el menú/hint). */
+body.touring .gyro-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+.gyro-btn.active {
+  background: var(--coral);
+  border-color: transparent;
+}
+.gyro-btn__icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* ---- Panel de escenas (izquierda) ------------------------------------ */
+.sidebar {
+  position: fixed;
+  left: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 230px;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+/* Modo inmersivo: con el mouse quieto, el menú lateral se desvanece (solo desktop;
+   en táctil se mantiene visible). Se reactiva al mover el mouse. */
+@media (hover: hover) and (pointer: fine) {
+  body.is-idle .sidebar {
+    opacity: 0;
+    transform: translate(-16px, -50%);
+    pointer-events: none;
+  }
+  body.is-idle {
+    cursor: none;
+  }
+}
+/* Durante el recorrido el menú de escenas se oculta en TODOS los dispositivos
+   (en móvil no hay "mouse quieto", así que se ata al estado del tour). */
+body.touring .sidebar {
+  opacity: 0;
+  pointer-events: none;
+}
+.sidebar__label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin: 0 0 2px 4px;
+}
+.scene-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.22s ease;
+  font-family: inherit;
+}
+.scene-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(3px);
+}
+.scene-card.active {
+  background: var(--coral);
+  border-color: var(--coral);
+  box-shadow: 0 10px 30px rgba(255, 79, 109, 0.35);
+}
+.scene-card.active .scene-card__place,
+.scene-card.active .scene-card__tag {
+  color: rgba(255, 255, 255, 0.85);
+}
+.scene-card__name {
+  font-family: 'Latam Sans', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+.scene-card__place {
+  font-size: 12px;
+  opacity: 0.85;
+}
+.scene-card__tag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-top: 3px;
+}
+
+/* ---- Panel info (abajo derecha) -------------------------------------- */
+.info {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  z-index: 10;
+  width: 300px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: var(--glass);
+  color: var(--ink);
+  box-shadow: 0 20px 50px rgba(8, 2, 30, 0.45);
+}
+.info__place {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--coral);
+  font-weight: 700;
+}
+.info__name {
+  font-family: 'Latam Sans', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  margin: 4px 0 8px;
+  color: var(--indigo);
+}
+.info__desc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+.info__credit {
+  margin-top: 12px;
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+/* ---- Hint de controles (abajo centro) -------------------------------- */
+.hint {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(20, 8, 46, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: opacity 0.35s ease;
+}
+/* Durante el recorrido el hint de controles se oculta (no aplica en modo libre). */
+body.touring .hint {
+  opacity: 0;
+  pointer-events: none;
+}
+/* El hint se auto-oculta a los pocos segundos para no tapar la vista. */
+.hint--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- Tarjeta de mensajes del recorrido -------------------------------- */
+.tour-caption {
+  position: fixed;
+  left: 50%;
+  top: 96px;
+  transform: transl(-50%, -8px);
+  transform: translateX(-50%) translateY(-8px);
+  z-index: 12;
+  width: max-content;
+  max-width: min(440px, calc(100vw - 48px));
+  padding: 16px 24px;
+  border-radius: 16px;
+  text-align: center;
+  font-family: 'Latam Sans', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.3;
+  color: #fff;
+  background: rgba(20, 8, 46, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 16px 40px rgba(8, 2, 30, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.tour-caption.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.tour-caption b {
+  color: var(--coral-soft);
+}
+
+/* ---- Transición entre escenas (fade a indigo) ------------------------- */
+#scene-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(120% 120% at 50% 0%, var(--indigo) 0%, var(--indigo-deep) 75%);
+  transition: opacity 0.45s ease;
+}
+#scene-transition.show {
+  opacity: 1;
+}
+
+/* ---- Loader ----------------------------------------------------------- */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background: radial-gradient(120% 120% at 50% 0%, var(--indigo) 0%, var(--indigo-deep) 70%);
+  transition: opacity 0.6s ease;
+}
+#loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+#loader .spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--coral);
+  animation: spin 0.9s linear infinite;
+}
+#loader.is-error .spinner {
+  display: none;
+}
+#loader-text {
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-align: center;
+  max-width: 460px;
+  padding: 0 24px;
+}
+/* Barra + porcentaje de avance de carga */
+.loader-progress {
+  width: 220px;
+  max-width: 62vw;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  overflow: hidden;
+  margin-top: 2px;
+}
+.loader-progress__fill {
+  height: 100%;
+  width: 0%;
+  background: var(--coral);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+#loader-pct {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+/* En estado de error se ocultan la barra y el % (se muestra el mensaje). */
+#loader.is-error .loader-progress,
+#loader.is-error #loader-pct {
+  display: none;
+}
+
+/* ---- Lightbox de bienvenida (controles al entrar) -------------------- */
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 60; /* sobre el loader (30) y el chrome */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(120% 120% at 50% 0%, rgba(42, 0, 136, 0.72) 0%, rgba(12, 10, 18, 0.9) 70%);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: opacity 0.4s ease;
+}
+.welcome--out {
+  opacity: 0;
+  pointer-events: none;
+}
+.welcome__card {
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: rgba(20, 12, 40, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 30px 28px 24px;
+  box-shadow: 0 30px 80px rgba(8, 2, 30, 0.6);
+  text-align: center;
+  color: var(--white);
+  animation: welcomeIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes welcomeIn {
+  from {
+    transform: translateY(14px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.welcome__logo {
+  height: 26px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+.welcome__eyebrow {
+  margin-top: 12px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--coral-soft);
+  font-weight: 700;
+}
+.welcome__title {
+  margin: 4px 0 18px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.welcome__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  text-align: left;
+  margin-bottom: 20px;
+}
+.welcome__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+.welcome__ico {
+  font-size: 20px;
+  width: 26px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.welcome__row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.welcome__row b {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.welcome__row span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.66);
+  line-height: 1.5;
+}
+.welcome__kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 6px;
+  margin: 1px;
+  font: 600 11px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  color: #fff;
+}
+.welcome__row span i {
+  font-style: normal;
+  opacity: 0.5;
+  margin: 0 3px;
+}
+.welcome__btn {
+  width: 100%;
+  padding: 13px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--coral);
+  color: #fff;
+  font-size: 14.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.welcome__btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(255, 79, 109, 0.4);
+}
+.welcome__note {
+  margin-top: 12px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+}
+.loader-logo {
+  height: 30px;
+  filter: brightness(0) invert(1);
+  margin-bottom: 4px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---- Responsive ------------------------------------------------------- */
+@media (max-width: 820px) {
+  /* Top bar compacto: solo logos, sin texto que desborde */
+  .topbar {
+    padding: 10px 14px;
+  }
+  .brand {
+    gap: 8px;
+  }
+  .brand__logo {
+    height: 19px;
+  }
+  .brand__divider,
+  .brand__title {
+    display: none;
+  }
+  .topbar__pre {
+    display: none;
+  }
+  .topbar__doppel {
+    height: 15px;
+  }
+
+  /* Selector de escenas: fila horizontal deslizable, abajo */
+  .sidebar {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    transform: none;
+    width: 100%;
+    padding: 10px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 0;
+    background: linear-gradient(to top, rgba(20, 8, 46, 0.94), rgba(20, 8, 46, 0));
+  }
+  .sidebar__label {
+    display: none;
+  }
+  #scenes {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 12px 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #scenes::-webkit-scrollbar {
+    display: none;
+  }
+  .scene-card {
+    flex: 0 0 auto;
+    min-width: 142px;
+    padding: 10px 14px;
+  }
+  .scene-card:hover {
+    transform: none;
+  }
+
+  .info {
+    display: none;
+  }
+  /* En mobile el hint SÍ se muestra (indica controles de dedo), reubicado arriba. */
+  .hint {
+    bottom: auto;
+    top: 92px;
+    font-size: 11.5px;
+    padding: 7px 14px;
+    max-width: calc(100vw - 36px);
+    text-align: center;
+  }
+  /* Cluster de controles: arriba al centro, bajo el header (centrado = nunca se
+     sale de pantalla, ni en horizontal con el notch lateral). */
+  .tour-btn,
+  .gyro-btn {
+    padding: 7px 11px;
+    font-size: 12px;
+  }
+
+  /* Tarjeta de mensajes: más compacta y debajo del cluster */
+  .tour-caption {
+    top: calc(96px + env(safe-area-inset-top, 0px));
+    font-size: 15px;
+    padding: 12px 18px;
+  }
+}
+
+/* ---- Horizontal en móvil: poca altura → compactar el chrome --------- */
+@media (orientation: landscape) and (max-height: 500px) {
+  .topbar {
+    padding: 6px 14px;
+  }
+  .brand__logo {
+    height: 16px;
+  }
+  .topbar__doppel {
+    height: 13px;
+  }
+  /* En horizontal el hint roba altura; se omite (los controles ya se sienten). */
+  .hint {
+    display: none;
+  }
+  .tour-caption {
+    top: 42px;
+    font-size: 13px;
+    padding: 7px 14px;
+  }
+  /* Menú de escenas más bajo y tarjetas compactas (sin la línea de tag). */
+  .sidebar {
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+  .scene-card {
+    min-width: 116px;
+    padding: 7px 12px;
+  }
+  .scene-card__tag {
+    display: none;
+  }
+  .scene-card__place {
+    font-size: 10px;
+  }
+}
+
+/* ---- Call-outs (hotspots + tarjeta de contenido) --------------------- */
+#callout-markers {
+  position: fixed;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none; /* solo los marcadores capturan clics; el resto pasa al canvas */
+}
+.hotspot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  font-family: 'Latam Sans', sans-serif;
+  white-space: nowrap;
+}
+.hotspot__dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--coral);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 0 rgba(255, 79, 109, 0.55);
+  animation: hotspot-pulse 2.2s infinite;
+  flex: 0 0 auto;
+}
+@keyframes hotspot-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 79, 109, 0.5); }
+  70% { box-shadow: 0 0 0 13px rgba(255, 79, 109, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 79, 109, 0); }
+}
+.hotspot__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(20, 8, 46, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.callout {
+  position: fixed;
+  z-index: 40;
+  left: 26px;
+  bottom: 26px;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 130px);
+  overflow-y: auto;
+  background: var(--glass);
+  color: var(--ink);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(8, 2, 30, 0.5);
+}
+.callout[hidden] { display: none; }
+.callout__close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(20, 8, 46, 0.55);
+  color: #fff;
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+}
+.callout__video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+}
+.callout__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.callout__img {
+  width: 100%;
+  display: block;
+  height: 170px;
+  object-fit: cover;
+}
+.callout__body { padding: 15px 18px 18px; }
+.callout__title {
+  font-family: 'Latam Sans', sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0 0 3px;
+  color: var(--indigo);
+}
+.callout__sub {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--coral);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.callout__body p { font-size: 13.5px; line-height: 1.5; margin: 0 0 8px; }
+
+#callout-editor {
+  position: fixed;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 41;
+  background: rgba(20, 8, 46, 0.88);
+  color: #fff;
+  font: 12px ui-monospace, Menlo, monospace;
+  padding: 8px 14px;
+  border-radius: 8px;
+  max-width: 92vw;
+  text-align: center;
+}
+#callout-editor[hidden] { display: none; }
+
+/* Móvil: la tarjeta como hoja inferior a ancho completo. */
+@media (max-width: 820px) {
+  .callout {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 74vh;
+    border-radius: 18px 18px 0 0;
+  }
+  .callout__video { border-radius: 0; }
+}
+
+/* ---- Botón mute del sonido ambiente (en el cluster de controles) ------ */
+.mute-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background: rgba(20, 8, 46, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.mute-btn:hover { background: rgba(20, 8, 46, 0.78); }
+.mute-btn.muted { opacity: 0.55; }
+.mute-btn__icon { font-size: 15px; line-height: 1; }
+
+/* ---- Link de vuelta al landing del proyecto (topbar) ------------------ */
+.back-link {
+  pointer-events: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(20, 8, 46, 0.5);
+  margin-right: 4px;
+}
+.back-link:hover { color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+@media (max-width: 820px) {
+  .back-link { font-size: 11px; padding: 5px 10px; }
+}
+
+/* ---- Hotspot estilo avatar (producto: la persona en el splat) --------- */
+.hotspot__dot--avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font: 700 15px 'Latam Sans', 'Inter', sans-serif;
+  color: #fff;
+  background: linear-gradient(150deg, #ff4f6d, #2a0088);
+}
+
+/* ---- Navbar LATAM compartida (demo + producto): barra flotante ------- */
+.lnav {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: rgba(16, 10, 36, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 40px rgba(5, 2, 15, 0.45);
+}
+.lnav__left { display: flex; align-items: center; gap: 13px; }
+.lnav__back {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.09);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1;
+}
+.lnav__back:hover { color: #fff; }
+.lnav__logo { height: 22px; filter: brightness(0) invert(1); }
+.lnav__tag {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  padding-left: 13px;
+}
+.lnav__right { display: flex; align-items: center; gap: 13px; }
+.lnav__lang {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font: 700 12px 'Latam Sans', 'Inter', sans-serif;
+  color: rgba(255, 255, 255, 0.6);
+}
+.lnav__lang .on { background: var(--coral); color: #fff; padding: 4px 9px; border-radius: 6px; border: none; font: inherit; cursor: pointer; }
+.lnav__lang span { padding: 4px 5px; }
+.lnav__ico {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  color: #fff;
+}
+.lnav__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--coral), var(--indigo));
+  font: 700 12px 'Latam Sans', sans-serif;
+  color: #fff;
+  position: relative;
+}
+.lnav__avatar::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--coral);
+  border: 2px solid #140b28;
+}
+@media (max-width: 700px) {
+  .lnav__tag, .lnav__ico, .lnav__lang { display: none; }
+}
+@media (max-width: 480px) {
+  .tour-btn__label, .gyro-btn__label { display: none; }
+  .tour-btn__icon { font-size: 14px; }
+}
