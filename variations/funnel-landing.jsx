@@ -910,6 +910,13 @@ function FunnelLanding() {
             <div style={{ fontFamily: FL.mono, fontSize: 11, color: FL.muted, marginTop: 14, letterSpacing: '0.1em' }}>
               ESTUDIO CREATIVO · LABORATORIO DE TECNOLOGÍA · SANTIAGO
             </div>
+            <div style={{ fontFamily: FL.mono, fontSize: 11, color: FL.muted, marginTop: 10, letterSpacing: '0.1em' }}>
+              <a href="/pulse/" style={{ color: 'inherit', textDecoration: 'none' }}>PULSE</a>
+              {' · '}
+              <a href="/crm/" style={{ color: 'inherit', textDecoration: 'none' }}>CRM</a>
+              {' · '}
+              <a href="/brandframe/" style={{ color: 'inherit', textDecoration: 'none' }}>BRANDFRAME</a>
+            </div>
           </div>
           <div style={{ textAlign: 'right', fontFamily: FL.mono, fontSize: 12, color: FL.muted, lineHeight: 1.8 }}>
             HOLA@DOPPEL.CL<br />
